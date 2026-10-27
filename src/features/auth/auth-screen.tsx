@@ -4,7 +4,9 @@ import { useSignIn, useSignUp, useSSO } from "@clerk/expo";
 import { makeRedirectUri } from "expo-auth-session";
 import { router } from "expo-router";
 import { Brand, IconButton } from "@/components/ui/brand";
-import { CommunityArt, communityAccents } from "@/components/ui/community-art";
+import { Image } from "expo-image";
+import { Illustration } from "@/components/ui/illustration";
+import { ProviderMark } from "@/components/ui/provider-mark";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
@@ -33,6 +35,7 @@ export function AuthScreen({
   >(continuation ? "continue" : "welcome");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
@@ -76,6 +79,10 @@ export function AuthScreen({
     } else setError("Please complete account verification to continue.");
   };
   const submit = async () => {
+    if (mode === "newpassword" && password !== confirmPassword) {
+      setError("Passwords don’t match.");
+      return;
+    }
     setPending(true);
     setError("");
     try {
@@ -151,71 +158,51 @@ export function AuthScreen({
   if (mode === "welcome")
     return (
       <Screen>
-        <Brand compact />
-        <Text
-          accessibilityRole="header"
-          style={{
-            color: colors.text,
-            fontSize: 36,
-            lineHeight: 41,
-            fontWeight: "700",
-            letterSpacing: -1.4,
-            marginTop: 20,
-          }}
-        >
-          Find your people. Share your perspective.
-        </Text>
-        <Text style={{ color: colors.muted, fontSize: 17, lineHeight: 25 }}>
-          A place for everyday photos and real connections.
-        </Text>
-        <View style={{ flexDirection: "row", gap: 12, marginVertical: 8 }}>
-          <View style={{ flex: 1, gap: 12, paddingTop: 18 }}>
-            <CommunityArt
-              accent={communityAccents[0]}
-              style={{ width: "100%", borderRadius: 28 }}
-            />
-            <CommunityArt
-              accent={communityAccents[2]}
-              style={{
-                width: "100%",
-                height: 100,
-                aspectRatio: undefined,
-                borderRadius: 28,
-              }}
-            />
-          </View>
-          <View style={{ flex: 0.8, gap: 12 }}>
-            <CommunityArt
-              accent={communityAccents[1]}
-              style={{
-                width: "100%",
-                height: 105,
-                aspectRatio: undefined,
-                borderRadius: 28,
-              }}
-            />
-            <CommunityArt
-              accent={communityAccents[3]}
-              style={{ width: "100%", borderRadius: 28 }}
-            />
-          </View>
+        <View style={{ gap: 12, flexGrow: 1 }}>
+          <Text
+            accessibilityRole="header"
+            style={{
+              color: colors.text,
+              fontSize: 34,
+              lineHeight: 39,
+              fontWeight: "800",
+              letterSpacing: -1.4,
+            }}
+          >
+            Find your people. Share your perspective.
+          </Text>
+          <Text style={{ color: colors.muted, fontSize: 16, lineHeight: 24 }}>
+            A place for everyday photos and real connections.
+          </Text>
+          <Image
+            accessible={false}
+            source={require("../../../assets/images/welcome-collage.png")}
+            contentFit="contain"
+            style={{
+              width: "100%",
+              aspectRatio: 1.1,
+              maxHeight: 310,
+              marginVertical: 4,
+            }}
+          />
+          <Button label="Get started" onPress={() => setMode("signup")} />
+          <Button
+            secondary
+            label="I have an account"
+            onPress={() => setMode("signin")}
+          />
+          <Text
+            style={{
+              color: colors.muted,
+              textAlign: "center",
+              fontSize: 12,
+              lineHeight: 18,
+              marginTop: 4,
+            }}
+          >
+            Photos bring us together.
+          </Text>
         </View>
-        <Button label="Get started" onPress={() => setMode("signup")} />
-        <Button
-          secondary
-          label="I have an account"
-          onPress={() => setMode("signin")}
-        />
-        <Text
-          style={{
-            color: colors.muted,
-            textAlign: "center",
-            fontSize: 13,
-            lineHeight: 20,
-          }}
-        >
-          Photos bring us together.
-        </Text>
       </Screen>
     );
   const title =
@@ -241,15 +228,35 @@ export function AuthScreen({
             setError("");
           }}
         />
-        <Brand compact />
+        {!["signin", "signup"].includes(mode) && <Brand compact />}
       </View>
-      <View style={{ gap: 8, paddingTop: 20, paddingBottom: 12 }}>
+      {!["signin", "signup"].includes(mode) && (
+        <Illustration
+          kind={
+            codeMode
+              ? "mail"
+              : mode === "newpassword"
+                ? "key"
+                : mode === "reset"
+                  ? "lock"
+                  : "success"
+          }
+          size={132}
+        />
+      )}
+      <View
+        style={{
+          gap: 8,
+          paddingTop: ["signin", "signup"].includes(mode) ? 12 : 0,
+          paddingBottom: 8,
+        }}
+      >
         <Text
           accessibilityRole="header"
           style={{
             color: colors.text,
-            fontSize: 32,
-            lineHeight: 38,
+            fontSize: 28,
+            lineHeight: 34,
             fontWeight: "700",
             letterSpacing: -1,
           }}
@@ -288,6 +295,20 @@ export function AuthScreen({
           value={password}
           onChangeText={setPassword}
         />
+      )}
+      {mode === "newpassword" && (
+        <Field
+          label="Confirm password"
+          secureTextEntry
+          autoComplete="new-password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+      )}
+      {mode === "signup" && (
+        <Text style={{ color: colors.muted, fontSize: 12, lineHeight: 18 }}>
+          Use at least 8 characters.
+        </Text>
       )}
       {codeMode && (
         <Field
@@ -339,7 +360,7 @@ export function AuthScreen({
       />
       {codeMode && (
         <Button
-          secondary
+          variant="tertiary"
           label="Resend code"
           disabled={busy}
           onPress={() => {
@@ -376,18 +397,20 @@ export function AuthScreen({
           </View>
           <Button
             secondary
+            icon={<ProviderMark provider="google" />}
             label="Continue with Google"
             disabled={busy}
             onPress={() => void social("google")}
           />
           <Button
             secondary
+            icon={<ProviderMark provider="facebook" />}
             label="Continue with Facebook"
             disabled={busy}
             onPress={() => void social("facebook")}
           />
           <Button
-            secondary
+            variant="tertiary"
             label={
               mode === "signup"
                 ? "Already have an account? Sign in"
@@ -403,7 +426,7 @@ export function AuthScreen({
       )}
       {!["signin", "signup"].includes(mode) && (
         <Button
-          secondary
+          variant="tertiary"
           label="Back to sign in"
           disabled={busy}
           onPress={() => {

@@ -15,12 +15,23 @@ export default function Username() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   return (
-    <Screen
-      insetTop={false}
-      title="What should we call you?"
-      subtitle="Your username is how others will find and recognize you on Codexgram."
-    >
+    <Screen insetTop={false}>
       <Text style={{ color: colors.muted }}>1 of 2</Text>
+      <Text
+        accessibilityRole="header"
+        style={{
+          color: colors.text,
+          fontSize: 32,
+          lineHeight: 38,
+          fontWeight: "700",
+          letterSpacing: -1,
+        }}
+      >
+        What should we call you?
+      </Text>
+      <Text style={{ color: colors.muted, fontSize: 16, lineHeight: 24 }}>
+        Your username is how others will find and recognize you on Codexgram.
+      </Text>
       <View
         style={{
           width: 120,
@@ -55,6 +66,7 @@ export default function Username() {
           {error}
         </Text>
       )}
+      <View style={{ flexGrow: 1, minHeight: 24 }} />
       <Button
         label="Continue"
         loading={busy}
