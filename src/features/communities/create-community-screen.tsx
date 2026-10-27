@@ -14,6 +14,7 @@ export function CreateCommunityScreen() {
   const create = useMutation(api.communities.create);
   const [name, setName] = useState("");
   const [handle, setHandle] = useState("");
+  const [handleError, setHandleError] = useState("");
   const [description, setDescription] = useState("");
   const [accent, setAccent] = useState("#5B36E8");
   const [busy, setBusy] = useState(false);
@@ -35,9 +36,23 @@ export function CreateCommunityScreen() {
         autoCapitalize="none"
         maxLength={24}
         value={handle}
-        onChangeText={setHandle}
+        onChangeText={(value) => {
+          setHandle(value);
+          setHandleError("");
+        }}
+        autoCorrect={false}
         placeholder="3–24 letters, numbers or underscores"
       />
+      <Text
+        style={{
+          color: handleError ? colors.danger : colors.muted,
+          fontSize: 14,
+          lineHeight: 20,
+        }}
+        accessibilityRole={handleError ? "alert" : undefined}
+      >
+        {handleError || "3–24 letters, numbers or underscores. No @ or spaces."}
+      </Text>
       <Field
         label="Description"
         multiline
@@ -86,9 +101,18 @@ export function CreateCommunityScreen() {
         label="Create community"
         loading={busy}
         onPress={() => {
+          if (busy) return;
+          const normalizedHandle = handle.trim().toLowerCase();
+          if (!/^[a-z0-9_]{3,24}$/.test(normalizedHandle)) {
+            setHandleError(
+              "Use 3–24 letters, numbers or underscores. Don’t include @ or spaces.",
+            );
+            return;
+          }
+          setHandleError("");
           setBusy(true);
           setError("");
-          void create({ name, handle, description, accent })
+          void create({ name, handle: normalizedHandle, description, accent })
             .then((id) =>
               router.replace({
                 pathname: "/community/[communityId]",

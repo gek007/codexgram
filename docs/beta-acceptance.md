@@ -5,7 +5,7 @@ Date: 2026-10-27. This record distinguishes observed results from pending checks
 ## Verified locally
 
 - Automated backend and pure-client tests cover identity isolation, username/community uniqueness, membership/onboarding, media ownership/validation, daily quotas, safe publish/edit retries, source pagination, blocking, comments/likes/notifications, creator/admin authorization, account deletion and signed webhooks.
-- Final automated result: **30 passing tests** (26 backend/pure-client, 4 UI). UI coverage includes disabled/loading controls, authenticated onboarding navigation, welcome/sign-in paths, and report reason submission/confirmation.
+- Final automated result: **31 passing tests** (26 backend/pure-client, 5 UI). UI coverage includes disabled/loading controls, authenticated onboarding navigation, welcome/sign-in paths, report reason submission/confirmation, and invalid community handle rejection before network submission.
 - Lint and TypeScript checks pass after excluding archived `example/` code.
 - `expo-doctor`: 20/20 checks passed.
 - iOS and Android JavaScript exports completed again after the design integration.
