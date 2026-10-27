@@ -46,8 +46,35 @@ test("invalid community handles stay in the form without sending a mutation", as
     description: "",
     accent: "#5B36E8",
   });
+  expect(await screen.findByText("Your community is ready.")).toBeOnTheScreen();
+  expect(mockReplace).not.toHaveBeenCalled();
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Go to community" }),
+  );
   expect(mockReplace).toHaveBeenCalledWith({
     pathname: "/community/[communityId]",
     params: { communityId: "community1" },
   });
+});
+
+test("a rejected creation keeps the form and never displays success", async () => {
+  mockReplace.mockClear();
+  mockCreate.mockRejectedValueOnce(new Error("Unable to create community"));
+  const screen = await render(<CreateCommunityScreen />);
+  await fireEvent.changeText(
+    screen.getByLabelText("Community name"),
+    "QA community",
+  );
+  await fireEvent.changeText(
+    screen.getByLabelText("Community handle"),
+    "qa_community",
+  );
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Create community" }),
+  );
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Could not complete that action. Check your connection and try again.",
+  );
+  expect(screen.queryByText("Your community is ready.")).toBeNull();
+  expect(mockReplace).not.toHaveBeenCalled();
 });

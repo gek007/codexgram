@@ -7,6 +7,8 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { useTheme } from "@/theme/theme-provider";
 import { CommunityArt } from "@/components/ui/community-art";
 import { Screen } from "@/components/ui/screen";
+import { ActionRow } from "@/components/ui/action-row";
+import { Feather } from "@expo/vector-icons";
 import { Button } from "@/components/ui/button";
 import { StateView } from "@/components/ui/state-view";
 import { FeedList } from "@/features/feed/feed-screen";
@@ -87,7 +89,15 @@ export function CommunityScreen({
               }}
             />
             <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                marginTop: -32,
+                padding: 12,
+                borderRadius: 20,
+                backgroundColor: colors.background,
+              }}
             >
               <CommunityArt
                 accent={c.accent}
@@ -125,6 +135,9 @@ export function CommunityScreen({
             )}
             {c.canPost ? (
               <Button
+                icon={
+                  <Feather name="plus" size={22} color={colors.onPrimary} />
+                }
                 label="New post"
                 onPress={() =>
                   router.push({ pathname: "/compose", params: { communityId } })
@@ -158,8 +171,8 @@ export function CommunityScreen({
             )}
             {c.canModerate && (
               <>
-                <Button
-                  secondary
+                <ActionRow
+                  icon="shield"
                   label={tools ? "Hide creator tools" : "Creator tools"}
                   onPress={() => setTools(!tools)}
                 />

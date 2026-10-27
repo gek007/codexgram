@@ -70,12 +70,15 @@ export function DirectoryScreen({
           >
             {onboarding ? "Find your kind of people." : "Discover"}
           </Text>
-          <IconButton
-            icon="plus"
-            label="Create a community"
-            filled
-            onPress={() => router.push("/community/create")}
-          />
+          <View style={{ alignItems: "center", gap: 2 }}>
+            <IconButton
+              icon="plus"
+              label="Create a community"
+              filled
+              onPress={() => router.push("/community/create")}
+            />
+            <Text style={{ color: colors.muted, fontSize: 12 }}>Create</Text>
+          </View>
         </View>
         {onboarding && (
           <Text style={{ fontSize: 16, lineHeight: 24, color: colors.muted }}>
@@ -147,7 +150,7 @@ export function DirectoryScreen({
                 : { flex: 1, maxWidth: "48.5%" }),
               borderWidth: 1,
               borderColor: colors.border,
-              borderRadius: 16,
+              borderRadius: 12,
               backgroundColor:
                 onboarding && c.joined ? colors.secondary : colors.surface,
               overflow: "hidden",
@@ -228,7 +231,11 @@ export function DirectoryScreen({
       />
       {onboarding && (
         <Button
-          label="Continue"
+          label={
+            joined.results.length
+              ? `Continue with ${joined.results.length} ${joined.results.length === 1 ? "community" : "communities"}`
+              : "Continue"
+          }
           disabled={!joined.results.length}
           loading={busy}
           onPress={() =>
