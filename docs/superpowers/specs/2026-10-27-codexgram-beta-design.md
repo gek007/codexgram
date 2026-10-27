@@ -96,3 +96,8 @@ Videos, albums, filters, direct messages, people-following, threaded replies, pr
 ## Beta acceptance
 
 Two independent accounts on physical iOS and Android can complete all three auth methods, onboarding, joining/creating communities, capture/library crop/rotate, posting/editing/replacement, likes/comments, notifications, reports, blocking and moderation. Restart/retry produces no lost draft or duplicate post. Server tests enforce ownership, moderation, block/ban rules, and quotas. Lint/typecheck and targeted automated tests pass. Native build install and QR open work on both devices. A signing/provider blocker is explicitly reported rather than claimed complete.
+
+
+## Owner-supplied visual references (2026-10-27)
+
+Use `output/design/codexgram-beta/` boards 01–14 and `design-notes.txt` as the visual source. Primary violet is `#5B36E8`, ivory `#FAF9F6`, ink `#202024`; dark background `#151419`, surface `#232128`, text `#F6F4FA`, accent `#B5A0FF`. Use the open-corner aperture wordmark, pill actions, flat community art, a two-column directory, three-column profile photo grids and four equal navigation tabs. Sample names/photos are presentation content, not seed data or a new full-name field. Product permissions, quotas and scope above remain authoritative. See `docs/beta-acceptance.md` for integration coverage and device evidence.

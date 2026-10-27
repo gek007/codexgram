@@ -7,108 +7,135 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/brand";
 import { StateView } from "@/components/ui/state-view";
 import { FeedList } from "@/features/feed/feed-screen";
 import { ContentMenu } from "@/features/moderation/content-menu";
 import { useTheme } from "@/theme/theme-provider";
-export function ProfileScreen({ userId }: { userId: Id<"users"> }) {
+export function ProfileScreen({
+  userId,
+  insetTop = true,
+}: {
+  userId: Id<"users">;
+  insetTop?: boolean;
+}) {
   const { colors } = useTheme();
   const profile = useQuery(api.users.profile, { userId });
   const [menu, setMenu] = useState(false);
   if (profile === undefined)
     return (
-      <Screen>
+      <Screen insetTop={insetTop} insetBottom={!insetTop}>
         <StateView title="Opening profile…" loading />
       </Screen>
     );
   if (!profile)
     return (
-      <Screen>
+      <Screen insetTop={insetTop} insetBottom={!insetTop}>
         <StateView title="Account unavailable" />
       </Screen>
     );
   return (
-    <Screen scroll={false}>
+    <Screen scroll={false} insetTop={insetTop} insetBottom={!insetTop}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+        <Text
+          accessibilityRole="header"
+          style={{
+            flex: 1,
+            fontSize: 28,
+            fontWeight: "700",
+            color: colors.text,
+          }}
+        >
+          {profile.isMe ? "You" : `@${profile.username}`}
+        </Text>
+        {profile.isMe ? (
+          <>
+            <IconButton
+              icon="plus-circle"
+              label="New post"
+              onPress={() => router.push("/compose")}
+            />
+            <IconButton
+              icon="settings"
+              label="Settings"
+              onPress={() => router.push("/settings")}
+            />
+          </>
+        ) : (
+          <IconButton
+            icon="more-horizontal"
+            label="Account options"
+            onPress={() => setMenu(!menu)}
+          />
+        )}
+      </View>
       <FeedList
         userId={userId}
         header={
-          <View style={{ gap: 16, paddingBottom: 24, alignItems: "center" }}>
+          <View style={{ gap: 16, paddingBottom: 24 }}>
             <View
-              style={{
-                height: 90,
-                width: 90,
-                borderRadius: 30,
-                backgroundColor: colors.secondary,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              style={{ flexDirection: "row", gap: 16, alignItems: "center" }}
             >
-              {profile.avatarUrl ? (
-                <Image
-                  source={profile.avatarUrl}
-                  style={{ width: 90, height: 90, borderRadius: 30 }}
-                />
-              ) : (
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: "800",
-                    color: colors.primary,
-                  }}
-                >
-                  {profile.username[0]?.toUpperCase()}
-                </Text>
-              )}
-            </View>
-            <Text
-              accessibilityRole="header"
-              style={{ fontSize: 28, fontWeight: "800", color: colors.text }}
-            >
-              @{profile.username}
-            </Text>
-            {!!profile.bio && (
-              <Text
+              <View
                 style={{
-                  color: colors.muted,
-                  lineHeight: 24,
-                  textAlign: "center",
+                  height: 100,
+                  width: 100,
+                  borderRadius: 50,
+                  backgroundColor: colors.secondary,
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                {profile.bio}
-              </Text>
-            )}
-            {profile.isMe ? (
-              <Button
-                secondary
-                label="Edit profile & settings"
-                onPress={() => router.push("/settings")}
-              />
-            ) : (
-              <>
-                <Button
-                  secondary
-                  label="Account options"
-                  onPress={() => setMenu(!menu)}
-                />
-                {menu && (
-                  <ContentMenu
-                    target={{ type: "user", id: userId }}
-                    authorId={userId}
-                    onDone={() => setMenu(false)}
+                {profile.avatarUrl ? (
+                  <Image
+                    source={profile.avatarUrl}
+                    style={{ width: 100, height: 100, borderRadius: 50 }}
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 40,
+                      fontWeight: "700",
+                      color: colors.primary,
+                    }}
+                  >
+                    {profile.username[0]?.toUpperCase()}
+                  </Text>
+                )}
+              </View>
+              <View style={{ flex: 1, gap: 8 }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "700",
+                    color: colors.text,
+                  }}
+                >
+                  @{profile.username}
+                </Text>
+                {!!profile.bio && (
+                  <Text
+                    style={{ color: colors.text, fontSize: 15, lineHeight: 22 }}
+                  >
+                    {profile.bio}
+                  </Text>
+                )}
+                {profile.isMe && (
+                  <Button
+                    secondary
+                    label="Edit profile"
+                    onPress={() => router.push("/settings/profile")}
                   />
                 )}
-              </>
+              </View>
+            </View>
+            {menu && !profile.isMe && (
+              <ContentMenu
+                target={{ type: "user", id: userId }}
+                authorId={userId}
+                onDone={() => setMenu(false)}
+              />
             )}
-            <Text
-              style={{
-                alignSelf: "flex-start",
-                fontSize: 21,
-                fontWeight: "700",
-                color: colors.text,
-              }}
-            >
-              Through {profile.isMe ? "your" : "their"} lens
-            </Text>
           </View>
         }
       />

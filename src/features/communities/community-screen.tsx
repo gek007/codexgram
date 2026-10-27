@@ -5,6 +5,7 @@ import { useQuery, useMutation, usePaginatedQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { useTheme } from "@/theme/theme-provider";
+import { CommunityArt } from "@/components/ui/community-art";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
 import { StateView } from "@/components/ui/state-view";
@@ -57,13 +58,13 @@ export function CommunityScreen({
   const [tools, setTools] = useState(false);
   if (c === undefined)
     return (
-      <Screen>
+      <Screen insetTop={false}>
         <StateView title="Opening community…" loading />
       </Screen>
     );
   if (!c)
     return (
-      <Screen>
+      <Screen insetTop={false}>
         <StateView
           title="Community unavailable"
           detail="It may have been archived."
@@ -71,26 +72,52 @@ export function CommunityScreen({
       </Screen>
     );
   return (
-    <Screen scroll={false}>
+    <Screen insetTop={false} scroll={false}>
       <FeedList
         communityId={communityId}
         header={
           <View style={{ gap: 14, paddingBottom: 18 }}>
-            <View
+            <CommunityArt
+              accent={c.accent}
               style={{
-                backgroundColor: c.accent,
-                padding: 24,
-                borderRadius: 24,
-                gap: 12,
+                width: "100%",
+                height: 160,
+                aspectRatio: undefined,
+                borderRadius: 20,
               }}
+            />
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
             >
-              <Text style={{ fontSize: 34, fontWeight: "800", color: "#fff" }}>
-                {c.name}
-              </Text>
-              <Text style={{ color: "#fff", fontSize: 15, lineHeight: 22 }}>
-                {c.description || "A place for your perspective."}
-              </Text>
+              <CommunityArt
+                accent={c.accent}
+                style={{ width: 64, height: 64 }}
+              />
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text
+                  accessibilityRole="header"
+                  style={{
+                    fontSize: 28,
+                    lineHeight: 34,
+                    fontWeight: "700",
+                    letterSpacing: -1,
+                    color: colors.text,
+                  }}
+                >
+                  {c.name}
+                </Text>
+                <Text style={{ color: colors.primary, fontSize: 14 }}>
+                  {c.joined ? "✓ Joined" : `@${c.handle}`}
+                </Text>
+              </View>
             </View>
+            {!!c.description && (
+              <Text
+                style={{ color: colors.muted, fontSize: 16, lineHeight: 24 }}
+              >
+                {c.description}
+              </Text>
+            )}
             {!!error && (
               <Text accessibilityRole="alert" style={{ color: colors.danger }}>
                 {error}
@@ -98,7 +125,7 @@ export function CommunityScreen({
             )}
             {c.canPost ? (
               <Button
-                label="Share a photo here"
+                label="New post"
                 onPress={() =>
                   router.push({ pathname: "/compose", params: { communityId } })
                 }

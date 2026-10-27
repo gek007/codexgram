@@ -9,7 +9,11 @@ const messages: Record<string, string> = {
   VALIDATION: "Check your entries and try again.",
   USERNAME_TAKEN: "That username is taken. Try another.",
   HANDLE_TAKEN: "That community handle is taken.",
-  QUOTA_EXCEEDED: "You have reached today’s limit. Try again tomorrow.",
+  QUOTA_EXCEEDED:
+    "You’ve shared 10 photos today. You can post again at 00:00 UTC.",
+  PHOTO_UPLOAD_LIMIT: "Photo upload limit reached. Try again at 00:00 UTC.",
+  AVATAR_UPLOAD_LIMIT:
+    "Profile photo upload limit reached. Try again at 00:00 UTC.",
   UPLOAD_REJECTED: "Choose a JPEG photo smaller than 5 MB.",
   ACCOUNT_UNAVAILABLE: "This account is currently unavailable.",
   CONFLICT: "This post changed. Reload before editing again.",

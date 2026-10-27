@@ -1,36 +1,45 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useSyncExternalStore } from "react";
 import { useColorScheme } from "react-native";
 
 const light = {
   background: "#FAF9F6",
   surface: "#FFFFFF",
-  text: "#242333",
-  muted: "#6F6B80",
-  border: "#E8E4F0",
-  primary: "#6841D9",
+  text: "#202024",
+  muted: "#686870",
+  border: "#E3E1E8",
+  primary: "#5B36E8",
   onPrimary: "#FFFFFF",
-  secondary: "#EEE8FC",
+  secondary: "#EEE9FF",
   coral: "#FF7864",
-  teal: "#167B70",
-  danger: "#B32946",
+  teal: "#237A50",
+  danger: "#B63C45",
 };
 const dark = {
-  background: "#171622",
-  surface: "#242231",
-  text: "#F9F7FF",
-  muted: "#BCB7CF",
+  background: "#151419",
+  surface: "#232128",
+  text: "#F6F4FA",
+  muted: "#B9B5C4",
   border: "#3C374E",
-  primary: "#B39AFF",
+  primary: "#B5A0FF",
   onPrimary: "#20163A",
   secondary: "#3B2C57",
   coral: "#FF9A89",
   teal: "#7DDBCC",
   danger: "#FF9BAB",
 };
+const subscribeHydration = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
 type Theme = { colors: typeof light; dark: boolean };
 const Context = createContext<Theme>({ colors: light, dark: false });
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const isDark = useColorScheme() === "dark";
+  const scheme = useColorScheme();
+  const hydrated = useSyncExternalStore(
+    subscribeHydration,
+    clientSnapshot,
+    serverSnapshot,
+  );
+  const isDark = hydrated && scheme === "dark";
   return (
     <Context.Provider value={{ colors: isDark ? dark : light, dark: isDark }}>
       {children}

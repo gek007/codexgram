@@ -13,19 +13,24 @@ export function Screen({
   title,
   subtitle,
   scroll = true,
+  insetTop = true,
+  insetBottom = true,
 }: {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
   scroll?: boolean;
+  insetTop?: boolean;
+  insetBottom?: boolean;
 }) {
   const { colors } = useTheme();
   const content = (
     <View
       style={{
-        padding: 22,
+        padding: 20,
         gap: 20,
         flexGrow: 1,
+        ...(!scroll ? { flex: 1 } : {}),
         width: "100%",
         maxWidth: 640,
         alignSelf: "center",
@@ -37,8 +42,9 @@ export function Screen({
             accessibilityRole="header"
             style={{
               fontSize: 32,
-              fontWeight: "800",
-              letterSpacing: -1,
+              fontWeight: "700",
+              lineHeight: 38,
+              letterSpacing: -1.1,
               color: colors.text,
             }}
           >
@@ -56,7 +62,12 @@ export function Screen({
   );
   return (
     <SafeAreaView
-      edges={["top", "left", "right", "bottom"]}
+      edges={[
+        ...(insetTop ? ["top" as const] : []),
+        "left",
+        "right",
+        ...(insetBottom ? ["bottom" as const] : []),
+      ]}
       style={{ flex: 1, backgroundColor: colors.background }}
     >
       <KeyboardAvoidingView

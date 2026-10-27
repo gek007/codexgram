@@ -48,15 +48,19 @@ function Navigation() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="compose"
-            options={{ title: "New photo", presentation: "modal" }}
+            options={{ title: "New post", presentation: "modal" }}
           />
-          <Stack.Screen name="post/[postId]" options={{ title: "Photo" }} />
+          <Stack.Screen name="post/[postId]" options={{ title: "Post" }} />
           <Stack.Screen
             name="post/edit/[postId]"
-            options={{ title: "Edit photo" }}
+            options={{ title: "Edit post" }}
           />
           <Stack.Screen name="user/[userId]" options={{ title: "Profile" }} />
           <Stack.Screen name="settings/index" options={{ title: "Settings" }} />
+          <Stack.Screen
+            name="settings/profile"
+            options={{ title: "Edit profile" }}
+          />
           <Stack.Screen
             name="settings/blocked"
             options={{ title: "Blocked accounts" }}

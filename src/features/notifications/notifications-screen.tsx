@@ -3,6 +3,7 @@ import { FlatList, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { usePaginatedQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Brand } from "@/components/ui/brand";
 import { Screen } from "@/components/ui/screen";
 import { StateView } from "@/components/ui/state-view";
 import { Button } from "@/components/ui/button";
@@ -18,11 +19,14 @@ export function NotificationsScreen() {
   const read = useMutation(api.notifications.markRead);
   const [error, setError] = useState("");
   return (
-    <Screen
-      title="A little love"
-      subtitle="The conversations your photos started."
-      scroll={false}
-    >
+    <Screen scroll={false} insetBottom={false}>
+      <Brand />
+      <Text
+        accessibilityRole="header"
+        style={{ color: colors.text, fontSize: 20, fontWeight: "700" }}
+      >
+        Activity
+      </Text>
       {!!error && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}
@@ -32,7 +36,7 @@ export function NotificationsScreen() {
         style={{ flex: 1 }}
         data={results}
         keyExtractor={(n) => n.id}
-        contentContainerStyle={{ gap: 12 }}
+        contentContainerStyle={{ gap: 0 }}
         renderItem={({ item: n }) => (
           <Pressable
             accessibilityRole="button"
@@ -47,19 +51,36 @@ export function NotificationsScreen() {
                 .catch((e) => setError(errorMessage(e)));
             }}
             style={{
-              padding: 18,
-              borderRadius: 20,
-              backgroundColor: n.readAt ? colors.surface : colors.secondary,
-              borderWidth: 1,
+              paddingVertical: 18,
+
+              backgroundColor: colors.background,
+              borderBottomWidth: 1,
               borderColor: colors.border,
             }}
           >
             <View
               style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
             >
-              <Text style={{ fontSize: 25 }}>
-                {n.kind === "like" ? "♡" : "✳"}
-              </Text>
+              <View
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: colors.secondary,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "700",
+                    color: colors.primary,
+                  }}
+                >
+                  {n.actorUsername[0]?.toUpperCase()}
+                </Text>
+              </View>
               <View style={{ flex: 1, gap: 4 }}>
                 <Text style={{ color: colors.text, lineHeight: 22 }}>
                   <Text style={{ fontWeight: "800" }}>@{n.actorUsername}</Text>{" "}

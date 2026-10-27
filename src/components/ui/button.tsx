@@ -7,12 +7,14 @@ export function Button({
   disabled = false,
   loading = false,
   secondary = false,
+  danger = false,
 }: {
   label: string;
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
   secondary?: boolean;
+  danger?: boolean;
 }) {
   const { colors } = useTheme();
   const blocked = disabled || loading;
@@ -25,10 +27,20 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => ({
         minHeight: 50,
-        borderRadius: 16,
+        borderRadius: 999,
         paddingHorizontal: 20,
         paddingVertical: 14,
-        backgroundColor: secondary ? colors.secondary : colors.primary,
+        backgroundColor: secondary
+          ? colors.surface
+          : danger
+            ? colors.danger
+            : colors.primary,
+        borderWidth: 1,
+        borderColor: danger
+          ? colors.danger
+          : secondary
+            ? colors.border
+            : colors.primary,
         opacity: blocked ? 0.55 : pressed ? 0.8 : 1,
         flexDirection: "row",
         justifyContent: "center",
@@ -45,7 +57,11 @@ export function Button({
         style={{
           fontSize: 16,
           fontWeight: "700",
-          color: secondary ? colors.text : colors.onPrimary,
+          color: secondary
+            ? danger
+              ? colors.danger
+              : colors.text
+            : colors.onPrimary,
         }}
       >
         {label}

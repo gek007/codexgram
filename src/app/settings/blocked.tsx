@@ -17,7 +17,7 @@ export default function Blocked() {
   const unblock = useMutation(api.moderation.unblock);
   const [error, setError] = useState("");
   return (
-    <Screen title="Blocked accounts" scroll={false}>
+    <Screen insetTop={false} title="Blocked accounts" scroll={false}>
       {!!error && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}

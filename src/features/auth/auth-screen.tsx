@@ -3,7 +3,9 @@ import { Pressable, Text, View } from "react-native";
 import { useSignIn, useSignUp, useSSO } from "@clerk/expo";
 import { makeRedirectUri } from "expo-auth-session";
 import { router } from "expo-router";
-import { Screen, Body } from "@/components/ui/screen";
+import { Brand, IconButton } from "@/components/ui/brand";
+import { CommunityArt, communityAccents } from "@/components/ui/community-art";
+import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { useTheme } from "@/theme/theme-provider";
@@ -19,6 +21,7 @@ export function AuthScreen({
   const { signUp, fetchStatus: upStatus } = useSignUp();
   const { startSSOFlow } = useSSO();
   const [mode, setMode] = useState<
+    | "welcome"
     | "signin"
     | "signup"
     | "verify"
@@ -27,7 +30,7 @@ export function AuthScreen({
     | "resetcode"
     | "newpassword"
     | "continue"
-  >(continuation ? "continue" : "signin");
+  >(continuation ? "continue" : "welcome");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -145,48 +148,128 @@ export function AuthScreen({
   const codeMode = ["verify", "trust", "resetcode"].includes(mode);
   const emailMode = ["signin", "signup", "reset", "continue"].includes(mode);
   const passwordMode = ["signin", "signup", "newpassword"].includes(mode);
-  return (
-    <Screen
-      title="Codexgram"
-      subtitle="Find your people. Share your perspective."
-    >
-      <View
-        style={{
-          height: 116,
-          backgroundColor: colors.secondary,
-          borderRadius: 28,
-          padding: 24,
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 16,
-        }}
-      >
-        <Text style={{ fontSize: 52, color: colors.primary }}>✳</Text>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontWeight: "800", fontSize: 22, color: colors.text }}>
-            Your kind of community.
-          </Text>
-          <Text style={{ color: colors.muted, marginTop: 5 }}>
-            One photo. A new connection.
-          </Text>
+  if (mode === "welcome")
+    return (
+      <Screen>
+        <Brand compact />
+        <Text
+          accessibilityRole="header"
+          style={{
+            color: colors.text,
+            fontSize: 36,
+            lineHeight: 41,
+            fontWeight: "700",
+            letterSpacing: -1.4,
+            marginTop: 20,
+          }}
+        >
+          Find your people. Share your perspective.
+        </Text>
+        <Text style={{ color: colors.muted, fontSize: 17, lineHeight: 25 }}>
+          A place for everyday photos and real connections.
+        </Text>
+        <View style={{ flexDirection: "row", gap: 12, marginVertical: 8 }}>
+          <View style={{ flex: 1, gap: 12, paddingTop: 18 }}>
+            <CommunityArt
+              accent={communityAccents[0]}
+              style={{ width: "100%", borderRadius: 28 }}
+            />
+            <CommunityArt
+              accent={communityAccents[2]}
+              style={{
+                width: "100%",
+                height: 100,
+                aspectRatio: undefined,
+                borderRadius: 28,
+              }}
+            />
+          </View>
+          <View style={{ flex: 0.8, gap: 12 }}>
+            <CommunityArt
+              accent={communityAccents[1]}
+              style={{
+                width: "100%",
+                height: 105,
+                aspectRatio: undefined,
+                borderRadius: 28,
+              }}
+            />
+            <CommunityArt
+              accent={communityAccents[3]}
+              style={{ width: "100%", borderRadius: 28 }}
+            />
+          </View>
         </View>
+        <Button label="Get started" onPress={() => setMode("signup")} />
+        <Button
+          secondary
+          label="I have an account"
+          onPress={() => setMode("signin")}
+        />
+        <Text
+          style={{
+            color: colors.muted,
+            textAlign: "center",
+            fontSize: 13,
+            lineHeight: 20,
+          }}
+        >
+          Photos bring us together.
+        </Text>
+      </Screen>
+    );
+  const title =
+    mode === "signup"
+      ? "Make room for your perspective."
+      : codeMode
+        ? "Check your inbox"
+        : mode === "newpassword"
+          ? "Choose a new password"
+          : mode === "reset"
+            ? "Let’s get you back in."
+            : mode === "continue"
+              ? "One more thing"
+              : "Good to see you.";
+  return (
+    <Screen>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <IconButton
+          icon="chevron-left"
+          label="Back to welcome"
+          onPress={() => {
+            setMode("welcome");
+            setError("");
+          }}
+        />
+        <Brand compact />
       </View>
-      <Text
-        accessibilityRole="header"
-        style={{ fontSize: 24, fontWeight: "800", color: colors.text }}
-      >
-        {mode === "signup"
-          ? "Make yourself at home"
-          : codeMode
-            ? "Check your email"
-            : mode === "newpassword"
-              ? "Choose a new password"
+      <View style={{ gap: 8, paddingTop: 20, paddingBottom: 12 }}>
+        <Text
+          accessibilityRole="header"
+          style={{
+            color: colors.text,
+            fontSize: 32,
+            lineHeight: 38,
+            fontWeight: "700",
+            letterSpacing: -1,
+          }}
+        >
+          {title}
+        </Text>
+        <Text style={{ color: colors.muted, fontSize: 16, lineHeight: 24 }}>
+          {mode === "signup"
+            ? "Create your Codexgram account."
+            : codeMode
+              ? `Enter the code sent to ${email || "your email"}.`
               : mode === "reset"
-                ? "Reset your password"
+                ? "Enter your email and we’ll send you a code to reset your password."
                 : mode === "continue"
-                  ? "Finish signing in"
-                  : "Welcome back"}
-      </Text>
+                  ? "Add and verify your email to finish setting up your account."
+                  : mode === "newpassword"
+                    ? "Create a new password for your account."
+                    : "Sign in to your Codexgram account."}
+        </Text>
+      </View>
       {emailMode && (
         <Field
           label="Email"
@@ -215,6 +298,23 @@ export function AuthScreen({
           onChangeText={setCode}
         />
       )}
+      {mode === "signin" && (
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setMode("reset")}
+          style={{ padding: 12 }}
+        >
+          <Text
+            style={{
+              textAlign: "right",
+              color: colors.primary,
+              fontWeight: "600",
+            }}
+          >
+            Forgot password?
+          </Text>
+        </Pressable>
+      )}
       {!!error && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}
@@ -230,7 +330,9 @@ export function AuthScreen({
                 ? "Send reset code"
                 : mode === "newpassword"
                   ? "Save password"
-                  : "Continue"
+                  : mode === "signin"
+                    ? "Sign in"
+                    : "Continue"
         }
         onPress={() => void submit()}
         loading={busy}
@@ -256,24 +358,34 @@ export function AuthScreen({
       )}
       {["signin", "signup"].includes(mode) && (
         <>
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <View style={{ flex: 1 }}>
-              <Button
-                secondary
-                label="Google"
-                disabled={busy}
-                onPress={() => void social("google")}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Button
-                secondary
-                label="Facebook"
-                disabled={busy}
-                onPress={() => void social("facebook")}
-              />
-            </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 14,
+              paddingVertical: 4,
+            }}
+          >
+            <View
+              style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+            />
+            <Text style={{ color: colors.muted }}>or</Text>
+            <View
+              style={{ flex: 1, height: 1, backgroundColor: colors.border }}
+            />
           </View>
+          <Button
+            secondary
+            label="Continue with Google"
+            disabled={busy}
+            onPress={() => void social("google")}
+          />
+          <Button
+            secondary
+            label="Continue with Facebook"
+            disabled={busy}
+            onPress={() => void social("facebook")}
+          />
           <Button
             secondary
             label={
@@ -289,23 +401,7 @@ export function AuthScreen({
           />
         </>
       )}
-      {mode === "signin" ? (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => setMode("reset")}
-          style={{ padding: 12 }}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              color: colors.primary,
-              fontWeight: "600",
-            }}
-          >
-            Forgot password?
-          </Text>
-        </Pressable>
-      ) : (
+      {!["signin", "signup"].includes(mode) && (
         <Button
           secondary
           label="Back to sign in"
@@ -320,7 +416,6 @@ export function AuthScreen({
         />
       )}
       <View nativeID="clerk-captcha" />
-      <Body>Share what you love, with people who get it.</Body>
     </Screen>
   );
 }

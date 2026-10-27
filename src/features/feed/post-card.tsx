@@ -7,6 +7,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useTheme } from "@/theme/theme-provider";
 import { errorMessage } from "@/lib/errors";
+import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ContentMenu } from "@/features/moderation/content-menu";
 import type { PostCardData } from "@/features/posts/types";
@@ -47,7 +48,7 @@ export function PostCard({
     <View
       style={{
         backgroundColor: colors.surface,
-        borderRadius: 24,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: colors.border,
         overflow: "hidden",
@@ -56,7 +57,7 @@ export function PostCard({
       <View
         style={{
           flexDirection: "row",
-          padding: 16,
+          padding: 12,
           alignItems: "center",
           gap: 10,
         }}
@@ -75,7 +76,7 @@ export function PostCard({
             style={{
               width: 40,
               height: 40,
-              borderRadius: 14,
+              borderRadius: 20,
               backgroundColor: colors.secondary,
               alignItems: "center",
               justifyContent: "center",
@@ -84,7 +85,7 @@ export function PostCard({
             {post.avatarUrl ? (
               <Image
                 source={post.avatarUrl}
-                style={{ width: 40, height: 40, borderRadius: 14 }}
+                style={{ width: 40, height: 40, borderRadius: 20 }}
               />
             ) : (
               <Text
@@ -152,7 +153,12 @@ export function PostCard({
           }}
         />
       </Pressable>
-      <View style={{ padding: 16, gap: 12 }}>
+      <View style={{ padding: 12, gap: 12 }}>
+        {!!post.caption && (
+          <Text style={{ color: colors.text, lineHeight: 23, fontSize: 15 }}>
+            {post.caption}
+          </Text>
+        )}
         <View style={{ flexDirection: "row", gap: 20, alignItems: "center" }}>
           <Pressable
             accessibilityRole="button"
@@ -169,7 +175,7 @@ export function PostCard({
             <Feather
               name="heart"
               size={23}
-              color={liked ? colors.danger : colors.text}
+              color={liked ? colors.primary : colors.text}
             />
             <Text style={{ color: colors.text, fontWeight: "700" }}>
               {Math.max(0, count)}
@@ -207,11 +213,6 @@ export function PostCard({
             {post.editedAt ? " · edited" : ""}
           </Text>
         </View>
-        {!!post.caption && (
-          <Text style={{ color: colors.text, lineHeight: 23, fontSize: 15 }}>
-            {post.caption}
-          </Text>
-        )}
         {!!error && (
           <Text accessibilityRole="alert" style={{ color: colors.danger }}>
             {error}
@@ -219,20 +220,22 @@ export function PostCard({
         )}
         {menu &&
           (post.canEdit ? (
-            <View style={{ gap: 8 }}>
+            <Sheet title="Your post" onClose={() => setMenu(false)}>
               <Button
                 secondary
-                label="Edit photo"
-                onPress={() =>
+                label="Edit caption or replace photo"
+                onPress={() => {
+                  setMenu(false);
                   router.push({
                     pathname: "/post/edit/[postId]",
                     params: { postId: post.id },
-                  })
-                }
+                  });
+                }}
               />
               <Button
                 secondary
-                label="Delete photo"
+                danger
+                label="Delete post"
                 onPress={() =>
                   Alert.alert(
                     "Delete this post?",
@@ -252,7 +255,8 @@ export function PostCard({
                   )
                 }
               />
-            </View>
+              <Button secondary label="Cancel" onPress={() => setMenu(false)} />
+            </Sheet>
           ) : (
             <ContentMenu
               target={{ type: "post", id: post.id }}

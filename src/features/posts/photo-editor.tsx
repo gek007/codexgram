@@ -52,7 +52,7 @@ export function PhotoEditor({
           width: size,
           height: size,
           overflow: "hidden",
-          borderRadius: 20,
+          borderRadius: 2,
           backgroundColor: colors.secondary,
           alignSelf: "center",
         }}
@@ -66,6 +66,43 @@ export function PhotoEditor({
             top: -(scaledHeight - size) * offset.y,
           }}
         />
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderWidth: 2,
+            borderColor: "#FFFFFF",
+          }}
+        >
+          {[1, 2].map((n) => (
+            <React.Fragment key={n}>
+              <View
+                style={{
+                  position: "absolute",
+                  left: `${(n * 100) / 3}%`,
+                  top: 0,
+                  bottom: 0,
+                  width: 1,
+                  backgroundColor: "rgba(255,255,255,0.6)",
+                }}
+              />
+              <View
+                style={{
+                  position: "absolute",
+                  top: `${(n * 100) / 3}%`,
+                  left: 0,
+                  right: 0,
+                  height: 1,
+                  backgroundColor: "rgba(255,255,255,0.6)",
+                }}
+              />
+            </React.Fragment>
+          ))}
+        </View>
       </View>
       <Button
         secondary
@@ -90,7 +127,7 @@ export function PhotoEditor({
         </Text>
       )}
       <Button
-        label="Use this photo"
+        label="Done"
         loading={busy}
         onPress={() => {
           setBusy(true);

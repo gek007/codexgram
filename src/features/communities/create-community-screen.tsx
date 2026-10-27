@@ -3,6 +3,7 @@ import { Text, View, Pressable } from "react-native";
 import { router } from "expo-router";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { CommunityArt, communityAccents } from "@/components/ui/community-art";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
@@ -14,13 +15,14 @@ export function CreateCommunityScreen() {
   const [name, setName] = useState("");
   const [handle, setHandle] = useState("");
   const [description, setDescription] = useState("");
-  const [accent, setAccent] = useState("#6841D9");
+  const [accent, setAccent] = useState("#5B36E8");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   return (
     <Screen
-      title="Make a little world"
-      subtitle="Give your shared interest a place to grow."
+      insetTop={false}
+      title="Make a space for your people."
+      subtitle="Create a public community for the photos you love and the people who get it."
     >
       <Field
         label="Community name"
@@ -29,7 +31,7 @@ export function CreateCommunityScreen() {
         onChangeText={setName}
       />
       <Field
-        label="Unique handle"
+        label="Community handle"
         autoCapitalize="none"
         maxLength={24}
         value={handle}
@@ -37,36 +39,44 @@ export function CreateCommunityScreen() {
         placeholder="3–24 letters, numbers or underscores"
       />
       <Field
-        label="About this community"
+        label="Description"
         multiline
         maxLength={500}
         value={description}
         onChangeText={setDescription}
       />
       <Text style={{ color: colors.text, fontWeight: "700" }}>
-        Pick a color
+        Accent color
       </Text>
       <View style={{ flexDirection: "row", gap: 12 }}>
-        {["#6841D9", "#B94336", "#167B70", "#9D3772", "#3159AE"].map(
-          (color) => (
-            <Pressable
-              key={color}
-              accessibilityRole="radio"
-              accessibilityLabel={`Community color ${color}`}
-              accessibilityState={{ selected: color === accent }}
-              onPress={() => setAccent(color)}
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 16,
-                backgroundColor: color,
-                borderWidth: color === accent ? 4 : 0,
-                borderColor: colors.text,
-              }}
-            />
-          ),
-        )}
+        {communityAccents.map((color) => (
+          <Pressable
+            key={color}
+            accessibilityRole="radio"
+            accessibilityLabel={`Community color ${color}`}
+            accessibilityState={{ selected: color === accent }}
+            onPress={() => setAccent(color)}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: color,
+              borderWidth: color === accent ? 4 : 0,
+              borderColor: colors.text,
+            }}
+          />
+        ))}
       </View>
+      <Text style={{ color: colors.muted, fontSize: 14 }}>
+        Community cover preview
+      </Text>
+      <CommunityArt
+        accent={accent}
+        style={{ width: "100%", height: 120, aspectRatio: undefined }}
+      />
+      <Text style={{ color: colors.muted, fontSize: 14 }}>
+        Communities are public to everyone in the beta.
+      </Text>
       {!!error && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}

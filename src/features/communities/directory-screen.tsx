@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
-import { Field } from "@/components/ui/field";
+import { IconButton } from "@/components/ui/brand";
+import { CommunityArt } from "@/components/ui/community-art";
 import { StateView } from "@/components/ui/state-view";
 import { useTheme } from "@/theme/theme-provider";
 import { errorMessage } from "@/lib/errors";
@@ -23,6 +25,11 @@ export function DirectoryScreen({
     { search },
     { initialNumItems: 20 },
   );
+  const joined = usePaginatedQuery(
+    api.communities.joined,
+    onboarding ? {} : "skip",
+    { initialNumItems: 30 },
+  );
   const join = useMutation(api.communities.join);
   const leave = useMutation(api.communities.leave);
   const complete = useMutation(api.users.completeOnboarding);
@@ -37,125 +44,174 @@ export function DirectoryScreen({
       setBusy(false);
     }
   };
+  const rows = onboarding || !!search.trim();
   return (
-    <Screen
-      title={onboarding ? "Find your people" : "Discover"}
-      subtitle={
-        onboarding
-          ? "Join at least one community to fill your feed."
-          : "Small worlds. Shared obsessions. A place for yours."
-      }
-      scroll={false}
-    >
-      <Field
-        label="Search communities"
-        placeholder="Photography, plants, everyday magic…"
-        value={search}
-        onChangeText={setSearch}
-      />
-      <Button
-        secondary
-        label="Create a community"
-        onPress={() => router.push("/community/create")}
-      />
+    <Screen scroll={false} insetTop={!onboarding} insetBottom={onboarding}>
+      <View style={{ gap: 12 }}>
+        {onboarding && <Text style={{ color: colors.muted }}>2 of 2</Text>}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+          }}
+        >
+          <Text
+            accessibilityRole="header"
+            style={{
+              flex: 1,
+              fontSize: onboarding ? 28 : 32,
+              lineHeight: onboarding ? 34 : 38,
+              letterSpacing: -1,
+              fontWeight: "700",
+              color: colors.text,
+            }}
+          >
+            {onboarding ? "Find your kind of people." : "Discover"}
+          </Text>
+          <IconButton
+            icon="plus"
+            label="Create a community"
+            filled
+            onPress={() => router.push("/community/create")}
+          />
+        </View>
+        {onboarding && (
+          <Text style={{ fontSize: 16, lineHeight: 24, color: colors.muted }}>
+            Join at least one community to get started.
+          </Text>
+        )}
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 10,
+          borderWidth: 1,
+          borderColor: colors.border,
+          borderRadius: 12,
+          backgroundColor: colors.surface,
+          paddingHorizontal: 14,
+        }}
+      >
+        <Feather name="search" size={21} color={colors.text} />
+        <TextInput
+          accessibilityLabel="Search communities"
+          placeholder="Search by community name"
+          placeholderTextColor={colors.muted}
+          value={search}
+          onChangeText={setSearch}
+          style={{ flex: 1, minHeight: 48, fontSize: 16, color: colors.text }}
+        />
+        {!!search && (
+          <IconButton
+            icon="x"
+            label="Clear search"
+            onPress={() => setSearch("")}
+          />
+        )}
+      </View>
       {!!error && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}
         </Text>
       )}
       <FlatList
+        key={rows ? "rows" : "grid"}
+        numColumns={rows ? 1 : 2}
         style={{ flex: 1 }}
         data={results}
         keyExtractor={(c) => c.id}
         keyboardShouldPersistTaps="handled"
+        columnWrapperStyle={rows ? undefined : { gap: 12 }}
         contentContainerStyle={{ gap: 12, paddingBottom: 20 }}
         renderItem={({ item: c }) => (
-          <View
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`View ${c.name}`}
+            onPress={() =>
+              router.push({
+                pathname: "/community/[communityId]",
+                params: { communityId: c.id },
+              })
+            }
             style={{
-              padding: 18,
-              borderRadius: 20,
-              backgroundColor: colors.surface,
+              ...(rows
+                ? {
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 10,
+                    gap: 14,
+                  }
+                : { flex: 1, maxWidth: "48.5%" }),
               borderWidth: 1,
               borderColor: colors.border,
-              gap: 12,
+              borderRadius: 16,
+              backgroundColor:
+                onboarding && c.joined ? colors.secondary : colors.surface,
+              overflow: "hidden",
             }}
           >
+            <CommunityArt
+              accent={c.accent}
+              style={
+                rows
+                  ? { width: 82, height: 82 }
+                  : { width: "100%", borderRadius: 12 }
+              }
+            />
             <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+              style={{
+                flex: rows ? 1 : undefined,
+                padding: rows ? 0 : 10,
+                gap: 4,
+              }}
             >
-              <View
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 15,
-                  backgroundColor: c.accent,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+              <Text
+                style={{ fontSize: 17, fontWeight: "700", color: colors.text }}
               >
-                <Text
-                  style={{ fontSize: 22, color: "#fff", fontWeight: "800" }}
-                >
-                  {c.name[0]}
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontSize: 19,
-                    fontWeight: "700",
-                    color: colors.text,
-                  }}
-                >
-                  {c.name}
-                </Text>
-                <Text style={{ color: colors.muted }}>@{c.handle}</Text>
-              </View>
-            </View>
-            {!!c.description && (
-              <Text style={{ color: colors.muted, lineHeight: 21 }}>
-                {c.description}
+                {c.name}
               </Text>
-            )}
-            <View style={{ gap: 8 }}>
-              <Button
-                secondary
-                label="View community"
+              <Text
+                numberOfLines={3}
+                style={{ fontSize: 14, lineHeight: 20, color: colors.muted }}
+              >
+                {c.description || `@${c.handle}`}
+              </Text>
+            </View>
+            {onboarding ? (
+              <IconButton
+                icon={c.joined ? "check" : "plus"}
+                label={c.joined ? `Leave ${c.name}` : `Join ${c.name}`}
+                filled={c.joined}
+                disabled={busy || (c.joined && c.canModerate)}
                 onPress={() =>
-                  router.push({
-                    pathname: "/community/[communityId]",
-                    params: { communityId: c.id },
-                  })
+                  void act(() =>
+                    c.joined
+                      ? leave({ communityId: c.id })
+                      : join({ communityId: c.id }),
+                  )
                 }
               />
-              {c.joined ? (
-                <Button
-                  secondary
-                  label="Joined"
-                  disabled={busy || c.canModerate}
-                  onPress={() => void act(() => leave({ communityId: c.id }))}
-                />
-              ) : (
-                <Button
-                  label="Join community"
-                  disabled={busy}
-                  onPress={() => void act(() => join({ communityId: c.id }))}
-                />
-              )}
-            </View>
-          </View>
+            ) : rows ? (
+              <Feather name="chevron-right" size={22} color={colors.muted} />
+            ) : null}
+          </Pressable>
         )}
         ListEmptyComponent={
           <StateView
             title={
               status === "LoadingFirstPage"
                 ? "Finding communities…"
-                : "A community starts with you"
+                : search
+                  ? "No communities found"
+                  : "A community starts with you"
             }
             detail={
               status === "LoadingFirstPage"
                 ? undefined
-                : "Create the first community or try another search."
+                : "Create a community or try another search."
             }
             loading={status === "LoadingFirstPage"}
           />
@@ -172,7 +228,8 @@ export function DirectoryScreen({
       />
       {onboarding && (
         <Button
-          label="Let’s go"
+          label="Continue"
+          disabled={!joined.results.length}
           loading={busy}
           onPress={() =>
             void act(async () => {

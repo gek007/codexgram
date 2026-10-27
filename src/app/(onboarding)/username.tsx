@@ -1,22 +1,44 @@
 import React, { useState } from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { useMutation } from "convex/react";
 import { router } from "expo-router";
 import { api } from "../../../convex/_generated/api";
+import { useTheme } from "@/theme/theme-provider";
 import { Screen } from "@/components/ui/screen";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { errorMessage } from "@/lib/errors";
 export default function Username() {
+  const { colors } = useTheme();
   const save = useMutation(api.users.setUsername);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   return (
     <Screen
+      insetTop={false}
       title="What should we call you?"
-      subtitle="Your username is how your communities will know you."
+      subtitle="Your username is how others will find and recognize you on Codexgram."
     >
+      <Text style={{ color: colors.muted }}>1 of 2</Text>
+      <View
+        style={{
+          width: 120,
+          height: 120,
+          alignSelf: "center",
+          marginVertical: 20,
+          borderRadius: 60,
+          backgroundColor: colors.secondary,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{ color: colors.primary, fontSize: 48, fontWeight: "700" }}
+        >
+          {username[0]?.toUpperCase() || "?"}
+        </Text>
+      </View>
       <Field
         label="Username"
         placeholder="3–24 letters, numbers or underscores"
@@ -25,9 +47,16 @@ export default function Username() {
         value={username}
         onChangeText={setUsername}
       />
-      {!!error && <Text accessibilityRole="alert">{error}</Text>}
+      <Text style={{ color: colors.muted, fontSize: 14 }}>
+        3–24 letters, numbers or underscores
+      </Text>
+      {!!error && (
+        <Text accessibilityRole="alert" style={{ color: colors.danger }}>
+          {error}
+        </Text>
+      )}
       <Button
-        label="Find my communities"
+        label="Continue"
         loading={busy}
         onPress={() => {
           setBusy(true);

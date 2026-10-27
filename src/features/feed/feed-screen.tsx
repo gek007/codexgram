@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, View, Text, Pressable } from "react-native";
 import { usePaginatedQuery } from "convex/react";
 import { router } from "expo-router";
 import { api } from "../../../convex/_generated/api";
@@ -7,16 +7,23 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Screen } from "@/components/ui/screen";
 import { StateView } from "@/components/ui/state-view";
 import { Button } from "@/components/ui/button";
+import { Image } from "expo-image";
+import { Brand, IconButton, Aperture } from "@/components/ui/brand";
+import { useTheme } from "@/theme/theme-provider";
 import { PostCard } from "./post-card";
 export function FeedList({
   communityId,
   userId,
   header,
+  noCommunities = false,
 }: {
   communityId?: Id<"communities">;
   userId?: Id<"users">;
   header?: React.ReactElement;
+  noCommunities?: boolean;
 }) {
+  const { colors } = useTheme();
+  const grid = !!userId;
   const home = usePaginatedQuery(
     api.feed.home,
     communityId || userId ? "skip" : {},
@@ -39,29 +46,80 @@ export function FeedList({
       : home;
   return (
     <FlatList
+      key={grid ? "photos" : "feed"}
+      numColumns={grid ? 3 : 1}
+      columnWrapperStyle={grid ? { gap: 0 } : undefined}
       data={results}
       keyExtractor={(post) => post.id}
       style={{ flex: 1 }}
-      contentContainerStyle={{ gap: 18, paddingBottom: 30 }}
+      contentContainerStyle={{ gap: grid ? 0 : 12, paddingBottom: 30 }}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={header}
-      renderItem={({ item }) => <PostCard post={item} />}
+      renderItem={({ item }) =>
+        grid ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={item.caption || `Photo by ${item.username}`}
+            onPress={() =>
+              router.push({
+                pathname: "/post/[postId]",
+                params: { postId: item.id },
+              })
+            }
+            style={{
+              flexBasis: "33.333%",
+              maxWidth: "33.333%",
+              aspectRatio: 1,
+              padding: 2,
+            }}
+          >
+            <Image
+              source={item.photoUrl}
+              contentFit="cover"
+              recyclingKey={item.id}
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: 6,
+                backgroundColor: colors.secondary,
+              }}
+            />
+          </Pressable>
+        ) : (
+          <PostCard post={item} />
+        )
+      }
       ListEmptyComponent={
-        <StateView
-          loading={status === "LoadingFirstPage"}
-          title={
-            status === "LoadingFirstPage"
-              ? "Loading photos…"
-              : status === "CanLoadMore"
-                ? "Keep exploring"
-                : "A little quiet here"
-          }
-          detail={
-            status === "CanLoadMore"
-              ? "More photos may be further down the feed."
-              : "Join a community or share the first photo."
-          }
-        />
+        <View style={{ paddingVertical: 40, gap: 20, alignItems: "center" }}>
+          {status !== "LoadingFirstPage" && <Aperture size={64} />}
+          <StateView
+            loading={status === "LoadingFirstPage"}
+            title={
+              status === "LoadingFirstPage"
+                ? "Loading photos…"
+                : status === "CanLoadMore"
+                  ? "Keep exploring"
+                  : noCommunities
+                    ? "Your feed starts here."
+                    : "No photos here yet."
+            }
+            detail={
+              status === "CanLoadMore"
+                ? "More photos may be further down the feed."
+                : noCommunities
+                  ? "Join a community to see new photos."
+                  : userId
+                    ? "Photos shared with communities will appear here."
+                    : "Share the first one."
+            }
+          />
+          {noCommunities && (
+            <Button
+              label="Discover communities"
+              onPress={() => router.push("/(tabs)/discover")}
+            />
+          )}
+        </View>
       }
       ListFooterComponent={
         status === "CanLoadMore" ? (
@@ -74,26 +132,35 @@ export function FeedList({
   );
 }
 export function HomeScreen() {
+  const { colors } = useTheme();
+  const joined = usePaginatedQuery(
+    api.communities.joined,
+    {},
+    { initialNumItems: 1 },
+  );
   return (
-    <Screen
-      title="Your people, in pictures."
-      subtitle="A fresh look at the things you love."
-      scroll={false}
-    >
-      <View style={{ flexDirection: "row", gap: 10 }}>
-        <View style={{ flex: 1 }}>
-          <Button
-            label="Share a photo"
-            onPress={() => router.push("/compose")}
-          />
-        </View>
-        <Button
-          secondary
-          label="Discover"
-          onPress={() => router.push("/(tabs)/discover")}
+    <Screen scroll={false} insetBottom={false}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Brand />
+        <IconButton
+          icon="plus"
+          label="New post"
+          filled
+          onPress={() => router.push("/compose")}
         />
       </View>
-      <FeedList />
+      <Text style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}>
+        From your communities
+      </Text>
+      <FeedList
+        noCommunities={joined.status === "Exhausted" && !joined.results.length}
+      />
     </Screen>
   );
 }

@@ -33,6 +33,12 @@ export async function uploadPhoto({
     error?: string;
   };
   if (!response.ok || !result.assetId)
-    throw new ConvexError(result.error ?? "UPLOAD_REJECTED");
+    throw new ConvexError(
+      result.error === "QUOTA_EXCEEDED"
+        ? purpose === "avatar"
+          ? "AVATAR_UPLOAD_LIMIT"
+          : "PHOTO_UPLOAD_LIMIT"
+        : (result.error ?? "UPLOAD_REJECTED"),
+    );
   return result.assetId;
 }

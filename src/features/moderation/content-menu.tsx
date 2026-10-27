@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, Pressable } from "react-native";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Sheet } from "@/components/ui/sheet";
+import { Aperture } from "@/components/ui/brand";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { errorMessage } from "@/lib/errors";
@@ -29,6 +31,8 @@ export function ContentMenu({
   const block = useMutation(api.moderation.block);
   const ban = useMutation(api.moderation.ban);
   const remove = useMutation(api.moderation.removeContent);
+  const [stage, setStage] = useState<"options" | "report" | "sent">("options");
+  const [reportAccount, setReportAccount] = useState(target.type === "user");
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -45,46 +49,145 @@ export function ContentMenu({
       setBusy(false);
     }
   };
+  const close = onDone ?? (() => setStage("options"));
+  const reasons = [
+    "Harassment or bullying",
+    "Hate or discrimination",
+    "Sexual content",
+    "Violence or threats",
+    "Spam",
+    "Something else",
+  ];
+  if (stage === "sent")
+    return (
+      <Sheet title="Thanks for letting us know." onClose={close}>
+        <View style={{ alignItems: "center", paddingVertical: 24, gap: 24 }}>
+          <Aperture size={64} />
+          <Text
+            style={{
+              color: colors.muted,
+              fontSize: 16,
+              lineHeight: 24,
+              textAlign: "center",
+            }}
+          >
+            Your report has been sent for review.
+          </Text>
+        </View>
+        <Button label="Done" onPress={close} />
+      </Sheet>
+    );
+  if (stage === "report")
+    return (
+      <Sheet
+        title={reportAccount ? "Report account" : `Report ${target.type}`}
+        onClose={close}
+      >
+        <Text style={{ fontSize: 24, fontWeight: "700", color: colors.text }}>
+          What’s wrong with this {reportAccount ? "account" : target.type}?
+        </Text>
+        {reasons.map((choice) => (
+          <Pressable
+            key={choice}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: reason === choice }}
+            onPress={() => setReason(choice)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 14,
+              minHeight: 52,
+              padding: 14,
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: reason === choice ? colors.primary : colors.border,
+              backgroundColor:
+                reason === choice ? colors.secondary : colors.surface,
+            }}
+          >
+            <View
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 11,
+                borderWidth: 1,
+                borderColor: colors.primary,
+                backgroundColor:
+                  reason === choice ? colors.primary : "transparent",
+              }}
+            />
+            <Text style={{ flex: 1, color: colors.text, fontSize: 15 }}>
+              {choice}
+            </Text>
+          </Pressable>
+        ))}
+        {!!error && (
+          <Text accessibilityRole="alert" style={{ color: colors.danger }}>
+            {error}
+          </Text>
+        )}
+        <Button
+          label="Send report"
+          disabled={!reason.trim()}
+          loading={busy}
+          onPress={() =>
+            void run(async () => {
+              await report({
+                target: reportAccount ? { type: "user", id: authorId } : target,
+                reason,
+              });
+              setStage("sent");
+            }, "Report sent.")
+          }
+        />
+        <Text
+          style={{ color: colors.muted, fontSize: 13, textAlign: "center" }}
+        >
+          Reports are reviewed by the app’s admin team.
+        </Text>
+        <Button secondary label="Cancel" onPress={close} />
+      </Sheet>
+    );
   return (
-    <View
-      style={{
-        backgroundColor: colors.secondary,
-        padding: 16,
-        borderRadius: 20,
-        gap: 10,
-      }}
+    <Sheet
+      title={
+        target.type === "user"
+          ? "Account options"
+          : `${target.type === "post" ? "Post" : "Comment"} options`
+      }
+      onClose={close}
     >
-      <Field
-        label="Reason for report or removal"
-        value={reason}
-        onChangeText={setReason}
-        maxLength={500}
-        multiline
-      />
       <Button
         secondary
-        label="Report content"
-        disabled={busy || !reason.trim()}
-        onPress={() =>
-          void run(
-            () => report({ target, reason }),
-            "Report sent to the app admins.",
-          )
+        label={
+          target.type === "user" ? "Report account" : `Report ${target.type}`
         }
+        onPress={() => {
+          setReportAccount(target.type === "user");
+          setStage("report");
+        }}
       />
+      {target.type !== "user" && (
+        <Button
+          secondary
+          label="Report this account"
+          onPress={() => {
+            setReportAccount(true);
+            setStage("report");
+          }}
+        />
+      )}
+      {canModerate && (
+        <Field
+          label="Reason for removal"
+          value={reason}
+          onChangeText={setReason}
+          maxLength={500}
+        />
+      )}
       <Button
         secondary
-        label="Report this account"
-        disabled={busy || !reason.trim()}
-        onPress={() =>
-          void run(
-            () => report({ target: { type: "user", id: authorId }, reason }),
-            "Account reported.",
-          )
-        }
-      />
-      <Button
-        secondary
+        danger
         label="Block this account"
         disabled={busy}
         onPress={() =>
@@ -109,6 +212,7 @@ export function ContentMenu({
       {canModerate && target.type !== "user" && (
         <Button
           secondary
+          danger
           label="Remove content"
           disabled={busy || !reason.trim()}
           onPress={() =>
@@ -134,6 +238,7 @@ export function ContentMenu({
       {canModerate && communityId && (
         <Button
           secondary
+          danger
           label="Ban author from community"
           disabled={busy}
           onPress={() =>
@@ -162,7 +267,7 @@ export function ContentMenu({
         </Text>
       )}
       {!!message && <Text style={{ color: colors.text }}>{message}</Text>}
-      {onDone && <Button secondary label="Close" onPress={onDone} />}
-    </View>
+      {onDone && <Button secondary label="Cancel" onPress={onDone} />}
+    </Sheet>
   );
 }

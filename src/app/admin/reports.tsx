@@ -20,6 +20,7 @@ function ReportInbox() {
   const [error, setError] = useState("");
   return (
     <Screen
+      insetTop={false}
       title="Report inbox"
       subtitle="Review the content and the report before taking action."
       scroll={false}
@@ -117,7 +118,7 @@ export default function Reports() {
   return user?.isAdmin ? (
     <ReportInbox />
   ) : (
-    <Screen>
+    <Screen insetTop={false}>
       <StateView title="Admin access required" />
     </Screen>
   );
