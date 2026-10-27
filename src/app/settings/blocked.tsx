@@ -17,7 +17,7 @@ export default function Blocked() {
   const unblock = useMutation(api.moderation.unblock);
   const [error, setError] = useState("");
   return (
-    <Screen insetTop={false} title="Blocked accounts" scroll={false}>
+    <Screen insetTop={false} scroll={false}>
       {!!error && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}
@@ -30,13 +30,17 @@ export default function Blocked() {
         renderItem={({ item }) => (
           <View
             style={{
-              gap: 8,
+              gap: 12,
+              flexDirection: "row",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: colors.border,
               padding: 16,
               borderRadius: 18,
               backgroundColor: colors.surface,
             }}
           >
-            <Text style={{ color: colors.text, fontWeight: "700" }}>
+            <Text style={{ color: colors.text, fontWeight: "700", flex: 1 }}>
               @{item.username}
             </Text>
             <Button

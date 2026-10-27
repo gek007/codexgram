@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Screen } from "@/components/ui/screen";
+import { ActionRow } from "@/components/ui/action-row";
 import { Button } from "@/components/ui/button";
 import { StateView } from "@/components/ui/state-view";
 import { useTheme } from "@/theme/theme-provider";
@@ -21,8 +22,7 @@ function ReportInbox() {
   return (
     <Screen
       insetTop={false}
-      title="Report inbox"
-      subtitle="Review the content and the report before taking action."
+
       scroll={false}
     >
       {!!error && (
@@ -41,6 +41,8 @@ function ReportInbox() {
               padding: 18,
               borderRadius: 20,
               backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
             }}
           >
             <Text style={{ color: colors.muted }}>{r.targetType} report</Text>
@@ -61,9 +63,16 @@ function ReportInbox() {
                 "suspend",
               ] as const
             ).map((decision) => (
-              <Button
+              <ActionRow
                 key={decision}
-                secondary
+                icon={
+                  decision === "dismiss"
+                    ? "check-circle"
+                    : decision === "remove"
+                      ? "trash-2"
+                      : "user-x"
+                }
+                danger={decision !== "dismiss"}
                 label={
                   decision === "dismiss"
                     ? "Dismiss report"

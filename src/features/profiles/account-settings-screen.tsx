@@ -11,6 +11,7 @@ import { api } from "../../../convex/_generated/api";
 import { useSession } from "@/providers/session";
 import { useTheme } from "@/theme/theme-provider";
 import { Screen } from "@/components/ui/screen";
+import { ActionRow } from "@/components/ui/action-row";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { errorMessage } from "@/lib/errors";
@@ -71,11 +72,7 @@ export function AccountSettingsScreen({
       </Screen>
     );
   return (
-    <Screen
-      insetTop={false}
-      title={editing ? "Edit profile" : "Settings"}
-      subtitle={editing ? `@${user.username}` : undefined}
-    >
+    <Screen insetTop={false}>
       {editing ? (
         <>
           <View style={{ alignItems: "center", gap: 12 }}>
@@ -101,20 +98,23 @@ export function AccountSettingsScreen({
               </View>
             )}
           </View>
+          <Button
+            variant="tertiary"
+            label={prepared ? "Choose another profile photo" : "Change photo"}
+            disabled={busy}
+            onPress={() => setSources(true)}
+          />
+          <Field
+            label="Username"
+            value={`@${user.username}`}
+            editable={false}
+          />
           <Field
             label="Bio"
             value={bio}
             maxLength={160}
             multiline
             onChangeText={setBio}
-          />
-          <Button
-            secondary
-            label={
-              prepared ? "Choose another profile photo" : "Choose profile photo"
-            }
-            disabled={busy}
-            onPress={() => setSources(true)}
           />
           {prepared && (
             <Text style={{ color: colors.muted }}>
@@ -158,61 +158,78 @@ export function AccountSettingsScreen({
           >
             Account
           </Text>
-          <Button
-            secondary
+          <ActionRow
+            icon="user"
             label="Edit profile"
+            detail={`@${user.username}`}
             onPress={() => router.push("/settings/profile")}
           />
-          <View
+          <Text
             style={{
-              padding: 16,
-              gap: 6,
-              borderWidth: 1,
-              borderColor: colors.border,
-              borderRadius: 16,
-              backgroundColor: colors.surface,
+              fontSize: 14,
+              fontWeight: "600",
+              color: colors.muted,
+              marginTop: 8,
             }}
           >
-            <Text
-              style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}
-            >
-              Appearance
-            </Text>
-            <Text style={{ color: colors.muted, lineHeight: 22 }}>
-              Light and dark appearance follow your device settings.
-            </Text>
-          </View>
-          <Button
-            secondary
+            Appearance
+          </Text>
+          <ActionRow
+            icon="sun"
+            label="Appearance"
+            detail="Light and dark appearance follow your device settings."
+          />
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: "600",
+              color: colors.muted,
+              marginTop: 8,
+            }}
+          >
+            In-app
+          </Text>
+          <ActionRow
+            icon="bell"
             label="Activity"
+            detail="Likes and comments appear in Activity."
             onPress={() => router.push("/(tabs)/notifications")}
           />
         </>
       )}
       {!editing && (
         <>
-          <View style={{ height: 1, backgroundColor: colors.border }} />
-          <Button
-            secondary
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: "600",
+              color: colors.muted,
+              marginTop: 8,
+            }}
+          >
+            Safety
+          </Text>
+          <ActionRow
+            icon="slash"
             label="Blocked accounts"
             onPress={() => router.push("/settings/blocked")}
           />
           {user.isAdmin && (
-            <Button
-              secondary
+            <ActionRow
+              icon="shield"
               label="Admin report inbox"
               onPress={() => router.push("/admin/reports")}
             />
           )}
-          <Button
-            secondary
+          <ActionRow
+            icon="log-out"
             danger
             label="Sign out"
             disabled={busy}
             onPress={() => void act(logout)}
           />
-          <Button
-            secondary
+          <ActionRow
+            icon="trash-2"
             danger
             label="Delete account"
             disabled={busy}

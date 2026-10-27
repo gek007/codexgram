@@ -122,7 +122,7 @@ export function ProfileScreen({
                 )}
                 {profile.isMe && (
                   <Button
-                    secondary
+                    variant="soft"
                     label="Edit profile"
                     onPress={() => router.push("/settings/profile")}
                   />
