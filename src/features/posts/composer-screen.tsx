@@ -3,7 +3,12 @@ import { Text, View, Image, Pressable, Alert } from "react-native";
 import { useAuth } from "@clerk/expo";
 import { router } from "expo-router";
 import { randomUUID } from "expo-crypto";
-import { useMutation, useQuery, usePaginatedQuery } from "convex/react";
+import {
+  useMutation,
+  useQuery,
+  usePaginatedQuery,
+  useConvex,
+} from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { useSession } from "@/providers/session";
@@ -24,6 +29,7 @@ import {
 } from "./draft-store";
 import { uploadPhoto } from "./upload";
 import { publishDraft } from "./publish-flow";
+import { makeEditInput } from "./edit-input";
 export function ComposerScreen({
   communityId,
   postId,
@@ -34,6 +40,7 @@ export function ComposerScreen({
   const { user } = useSession();
   const { colors } = useTheme();
   const { getToken } = useAuth();
+  const convex = useConvex();
   const create = useMutation(api.posts.create);
   const update = useMutation(api.posts.update);
   const post = useQuery(api.posts.get, postId ? { postId } : "skip");
@@ -52,7 +59,7 @@ export function ComposerScreen({
   useEffect(() => {
     if (!user || hydrated.current || (postId && post === undefined)) return;
     hydrated.current = true;
-    void loadDraft(user.id)
+    void loadDraft(user.id, postId)
       .then((saved) => {
         if (saved && saved.postId === postId) {
           setDraft(saved);
@@ -64,6 +71,7 @@ export function ComposerScreen({
           requestId: randomUUID(),
           communityId: post?.communityId ?? communityId,
           postId,
+          expectedRevision: post?.revision,
           caption: post?.caption ?? "",
           updatedAt: Date.now(),
         });
@@ -106,11 +114,26 @@ export function ComposerScreen({
     setError("");
     try {
       const id = await publishDraft(draft, {
+        reconcile: async (d) => {
+          const found = await convex.query(api.posts.reconcile, {
+            requestId: d.requestId,
+            postId: d.postId as Id<"posts"> | undefined,
+            communityId: d.communityId as Id<"communities"> | undefined,
+            caption: d.caption,
+            assetId: d.uploadedAssetId as Id<"mediaAssets"> | undefined,
+            expectedRevision: d.expectedRevision,
+          });
+          return found?.postId ?? null;
+        },
+        assetAvailable: async (assetId) =>
+          convex.query(api.media.available, {
+            assetId: assetId as Id<"mediaAssets">,
+          }),
         upload: async (d) =>
           uploadPhoto({
             uri: d.localPhotoUri!,
             purpose: "post",
-            requestId: d.requestId,
+            requestId: `${d.requestId}_${d.uploadAttempt ?? 0}`,
             getToken: () => getToken({ template: "convex" }),
           }),
         save: async (d) => {
@@ -119,12 +142,7 @@ export function ComposerScreen({
         },
         create: async (d) => {
           if (postId && post) {
-            await update({
-              postId,
-              caption: d.caption,
-              assetId: d.uploadedAssetId as Id<"mediaAssets"> | undefined,
-              expectedRevision: post.revision,
-            });
+            await update(makeEditInput(d));
             return postId;
           }
           return create({
@@ -136,7 +154,7 @@ export function ComposerScreen({
         },
         clear: async () => {
           finished.current = true;
-          await clearDraft(draft.ownerId);
+          await clearDraft(draft.ownerId, draft.postId);
         },
       });
       router.replace({ pathname: "/post/[postId]", params: { postId: id } });
@@ -170,7 +188,7 @@ export function ComposerScreen({
           onCancel={() => setEditing(null)}
           onDone={(p) => {
             const id = randomUUID();
-            void retainPhoto(draft.ownerId, p.uri, id)
+            void retainPhoto(draft.ownerId, p.uri, id, draft.postId)
               .then((uri) => {
                 patch({
                   localPhotoUri: uri,
@@ -318,7 +336,9 @@ export function ComposerScreen({
                 style: "destructive",
                 onPress: () => {
                   finished.current = true;
-                  void clearDraft(draft.ownerId).then(() => router.back());
+                  void clearDraft(draft.ownerId, draft.postId).then(() =>
+                    router.back(),
+                  );
                 },
               },
             ],

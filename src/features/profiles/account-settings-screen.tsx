@@ -14,7 +14,7 @@ import { errorMessage } from "@/lib/errors";
 import { PhotoEditor } from "@/features/posts/photo-editor";
 import { selectPhoto, type Photo } from "@/features/posts/media";
 import { uploadPhoto } from "@/features/posts/upload";
-import { clearDraft } from "@/features/posts/draft-store";
+import { clearAllDrafts } from "@/features/posts/draft-store";
 export function AccountSettingsScreen() {
   const { user } = useSession();
   const { colors } = useTheme();
@@ -40,7 +40,7 @@ export function AccountSettingsScreen() {
     }
   };
   const logout = async () => {
-    if (user) await clearDraft(user.id);
+    if (user) await clearAllDrafts(user.id);
     await signOut();
     router.replace("/");
   };

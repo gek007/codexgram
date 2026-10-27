@@ -108,8 +108,8 @@ export const create = mutation({
     if (old) {
       if (
         old.communityId !== args.communityId ||
-        old.assetId !== args.assetId ||
-        old.caption !== caption
+        (old.initialAssetId ?? old.assetId) !== args.assetId ||
+        (old.initialCaption ?? old.caption) !== caption
       )
         return fail("CONFLICT");
       return old._id;
@@ -125,21 +125,46 @@ export const create = mutation({
       caption,
       requestId: args.requestId,
       revision: 0,
+      initialCaption: caption,
+      initialAssetId: args.assetId,
       status: "active",
       likeCount: 0,
       commentCount: 0,
     });
   },
 });
+
+const editArgs = {
+  postId: v.id("posts"),
+  caption: v.optional(v.string()),
+  assetId: v.optional(v.id("mediaAssets")),
+  expectedRevision: v.number(),
+  requestId: v.string(),
+};
 export const update = mutation({
-  args: {
-    postId: v.id("posts"),
-    caption: v.optional(v.string()),
-    assetId: v.optional(v.id("mediaAssets")),
-    expectedRevision: v.number(),
-  },
+  args: editArgs,
   handler: async (ctx, args) => {
     const user = await requireUser(ctx);
+    if (!/^[a-zA-Z0-9_-]{1,80}$/.test(args.requestId))
+      return fail("VALIDATION");
+    const caption =
+      args.caption === undefined ? undefined : text(args.caption, 2000);
+    const previous = await ctx.db
+      .query("postEdits")
+      .withIndex("by_author_request", (q) =>
+        q.eq("authorId", user._id).eq("requestId", args.requestId),
+      )
+      .unique();
+    if (previous) {
+      if (
+        previous.postId !== args.postId ||
+        previous.caption !== caption ||
+        previous.assetId !== args.assetId ||
+        previous.expectedRevision !== args.expectedRevision
+      )
+        return fail("CONFLICT");
+      return;
+    }
     const post = await ctx.db.get(args.postId);
     if (!post || post.status !== "active") return fail("NOT_FOUND");
     if (post.authorId !== user._id) return fail("FORBIDDEN");
@@ -151,12 +176,66 @@ export const update = mutation({
       await retireAsset(ctx, post.assetId);
     }
     await ctx.db.patch(post._id, {
-      caption:
-        args.caption === undefined ? post.caption : text(args.caption, 2000),
+      caption: caption ?? post.caption,
       assetId: args.assetId ?? post.assetId,
+      initialCaption: post.initialCaption ?? post.caption,
+      initialAssetId: post.initialAssetId ?? post.assetId,
       revision: post.revision + 1,
       editedAt: Date.now(),
     });
+    await ctx.db.insert("postEdits", {
+      authorId: user._id,
+      postId: args.postId,
+      requestId: args.requestId,
+      caption,
+      assetId: args.assetId,
+      expectedRevision: args.expectedRevision,
+    });
+  },
+});
+export const reconcile = query({
+  args: {
+    requestId: v.string(),
+    postId: v.optional(v.id("posts")),
+    communityId: v.optional(v.id("communities")),
+    caption: v.string(),
+    assetId: v.optional(v.id("mediaAssets")),
+    expectedRevision: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    const caption = text(args.caption, 2000);
+    if (args.postId) {
+      const edit = await ctx.db
+        .query("postEdits")
+        .withIndex("by_author_request", (q) =>
+          q.eq("authorId", user._id).eq("requestId", args.requestId),
+        )
+        .unique();
+      if (!edit) return null;
+      if (
+        edit.postId !== args.postId ||
+        edit.caption !== caption ||
+        edit.assetId !== args.assetId ||
+        edit.expectedRevision !== args.expectedRevision
+      )
+        return fail("CONFLICT");
+      return { postId: edit.postId };
+    }
+    const post = await ctx.db
+      .query("posts")
+      .withIndex("by_author_request", (q) =>
+        q.eq("authorId", user._id).eq("requestId", args.requestId),
+      )
+      .unique();
+    if (!post) return null;
+    if (
+      post.communityId !== args.communityId ||
+      (post.initialCaption ?? post.caption) !== caption ||
+      (post.initialAssetId ?? post.assetId) !== args.assetId
+    )
+      return fail("CONFLICT");
+    return { postId: post._id };
   },
 });
 export const get = query({

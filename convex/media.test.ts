@@ -1,11 +1,10 @@
+import photo from "./test-photo.json";
 import { expect, test } from "vitest";
 import { convexTest } from "convex-test";
 import schema from "./schema";
 import { api, internal } from "./_generated/api";
 const modules = import.meta.glob("./**/*.ts");
-const jpeg = new Uint8Array([
-  255, 216, 255, 192, 0, 11, 8, 0, 100, 0, 100, 1, 1, 17, 0, 255, 217,
-]);
+const jpeg = Uint8Array.from(atob(photo.base64), (c) => c.charCodeAt(0));
 test("authenticated upload validates bytes and binds media to its uploader", async () => {
   const t = convexTest(schema, modules);
   const alice = t.withIdentity({ subject: "alice" });

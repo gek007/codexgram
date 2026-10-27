@@ -38,3 +38,72 @@ test("a failed publish preserves the uploaded asset and request ID for safe retr
   expect(seen).toEqual(["same-request", "same-request"]);
   expect(cleared).toBe(true);
 });
+
+test("expired pending assets are renewed without changing the publish request", async () => {
+  let prepared: Draft | undefined;
+  const id = await publishDraft(
+    {
+      version: 1,
+      ownerId: "a",
+      communityId: "c",
+      requestId: "stable",
+      caption: "Hello",
+      localPhotoUri: "file:///retained.jpg",
+      uploadedAssetId: "expired",
+      updatedAt: 1,
+    },
+    {
+      reconcile: async () => null,
+      assetAvailable: async () => false,
+      upload: async (d) => {
+        expect(d.uploadAttempt).toBe(1);
+        return "renewed";
+      },
+      save: async (d) => {
+        prepared = d;
+      },
+      create: async (d) => {
+        expect(d.requestId).toBe("stable");
+        expect(d.uploadedAssetId).toBe("renewed");
+        return "post";
+      },
+      clear: async () => {},
+    },
+  );
+  expect(id).toBe("post");
+  expect(prepared?.uploadedAssetId).toBe("renewed");
+});
+test("committed replacement is reconciled before checking its now-attached asset", async () => {
+  let cleared = false;
+  const id = await publishDraft(
+    {
+      version: 1,
+      ownerId: "a",
+      postId: "p",
+      communityId: "c",
+      requestId: "edit",
+      caption: "Edited",
+      uploadedAssetId: "attached",
+      expectedRevision: 3,
+      updatedAt: 1,
+    },
+    {
+      reconcile: async () => "p",
+      assetAvailable: async () => {
+        throw new Error("Must reconcile first");
+      },
+      upload: async () => {
+        throw new Error("Must not reupload");
+      },
+      save: async () => {},
+      create: async () => {
+        throw new Error("Must not edit twice");
+      },
+      clear: async () => {
+        cleared = true;
+      },
+    },
+  );
+  expect(id).toBe("p");
+  expect(cleared).toBe(true);
+});

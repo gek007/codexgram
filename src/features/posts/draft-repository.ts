@@ -9,6 +9,8 @@ export type Draft = {
   width?: number;
   height?: number;
   uploadedAssetId?: string;
+  uploadAttempt?: number;
+  expectedRevision?: number;
   updatedAt: number;
 };
 export type DraftStorage = {
@@ -16,19 +18,25 @@ export type DraftStorage = {
   write: (key: string, value: string) => Promise<void>;
   remove: (key: string) => Promise<void>;
 };
+export const draftKey = (ownerId: string, postId?: string) =>
+  JSON.stringify([ownerId, postId ?? null]);
 export function createDraftRepository(storage: DraftStorage) {
   return {
     async save(draft: Draft) {
-      await storage.write(draft.ownerId, JSON.stringify(draft));
+      await storage.write(
+        draftKey(draft.ownerId, draft.postId),
+        JSON.stringify(draft),
+      );
     },
-    async load(ownerId: string): Promise<Draft | null> {
+    async load(ownerId: string, postId?: string): Promise<Draft | null> {
       try {
-        const value = await storage.read(ownerId);
+        const value = await storage.read(draftKey(ownerId, postId));
         if (!value) return null;
         const d = JSON.parse(value) as Partial<Draft>;
         if (
           d.version !== 1 ||
           d.ownerId !== ownerId ||
+          d.postId !== postId ||
           typeof d.requestId !== "string" ||
           typeof d.caption !== "string" ||
           typeof d.updatedAt !== "number"
@@ -39,8 +47,8 @@ export function createDraftRepository(storage: DraftStorage) {
         return null;
       }
     },
-    async clear(ownerId: string) {
-      await storage.remove(ownerId);
+    async clear(ownerId: string, postId?: string) {
+      await storage.remove(draftKey(ownerId, postId));
     },
   };
 }

@@ -161,7 +161,7 @@ export function AuthScreen({
           gap: 16,
         }}
       >
-        <Text style={{ fontSize: 52 }}>✳</Text>
+        <Text style={{ fontSize: 52, color: colors.primary }}>✳</Text>
         <View style={{ flex: 1 }}>
           <Text style={{ fontWeight: "800", fontSize: 22, color: colors.text }}>
             Your kind of community.

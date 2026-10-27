@@ -1,2 +1,0 @@
-import { defineConfig } from 'vitest/config';
-export default defineConfig({test:{projects:[{test:{name:'backend',include:['convex/**/*.test.ts'],environment:'edge-runtime'}},{test:{name:'client',include:['src/**/*.test.ts'],environment:'node'}}]}});

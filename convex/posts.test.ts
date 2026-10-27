@@ -107,6 +107,7 @@ test("replacement keeps the post identity and counts; stale or foreign edits rej
     assetId: await asset(),
     caption: "Edited",
     expectedRevision: 0,
+    requestId: crypto.randomUUID(),
   });
   const post = await t.run((ctx) => ctx.db.get(postId));
   expect(post).toMatchObject({
@@ -121,6 +122,7 @@ test("replacement keeps the post identity and counts; stale or foreign edits rej
       postId,
       caption: "stale",
       expectedRevision: 0,
+      requestId: crypto.randomUUID(),
     }),
   ).rejects.toThrow("CONFLICT");
   const bob = t.withIdentity({ subject: "bob" });
@@ -130,6 +132,67 @@ test("replacement keeps the post identity and counts; stale or foreign edits rej
       postId,
       caption: "hijack",
       expectedRevision: 1,
+      requestId: crypto.randomUUID(),
     }),
   ).rejects.toThrow("FORBIDDEN");
+});
+
+test("lost edit responses are idempotent even after another later edit", async () => {
+  const t = convexTest(schema, modules);
+  const alice = t.withIdentity({ subject: "alice" });
+  const userId = await alice.mutation(api.users.ensureCurrent, {});
+  const communityId = await alice.mutation(api.communities.create, {
+    name: "Photos",
+    handle: "photos",
+    description: "",
+    accent: "#6841D9",
+  });
+  const asset = () =>
+    t.run(async (ctx) =>
+      ctx.db.insert("mediaAssets", {
+        ownerId: userId,
+        storageId: await ctx.storage.store(new Blob(["img"])),
+        requestId: crypto.randomUUID(),
+        purpose: "post",
+        state: "pending",
+        bytes: 100,
+        width: 100,
+        height: 100,
+        expiresAt: Date.now() + 86400000,
+      }),
+    );
+  const postId = await alice.mutation(api.posts.create, {
+    communityId,
+    assetId: await asset(),
+    requestId: "new",
+  });
+  const input = {
+    postId,
+    assetId: await asset(),
+    caption: "Replacement",
+    expectedRevision: 0,
+    requestId: "edit-one",
+  };
+  await alice.mutation(api.posts.update, input);
+  await alice.mutation(api.posts.update, input);
+  await alice.mutation(api.posts.update, {
+    postId,
+    caption: "Later edit",
+    expectedRevision: 1,
+    requestId: "edit-two",
+  });
+  await alice.mutation(api.posts.update, input);
+  expect(await t.run((ctx) => ctx.db.get(postId))).toMatchObject({
+    caption: "Later edit",
+    revision: 2,
+  });
+  expect(
+    await alice.query(api.posts.reconcile, {
+      postId,
+      requestId: "edit-one",
+      caption: "Replacement",
+      assetId: input.assetId,
+      expectedRevision: 0,
+    }),
+  ).toEqual({ postId });
 });

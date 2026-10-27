@@ -1,3 +1,4 @@
+import { decode } from "jpeg-js";
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export function jpegDimensions(bytes: Uint8Array) {
   if (
@@ -24,6 +25,23 @@ export function jpegDimensions(bytes: Uint8Array) {
       const width = (bytes[at + 5] << 8) | bytes[at + 6];
       if (width < 1 || height < 1 || width > 1600 || height > 1600)
         throw new Error("UPLOAD_REJECTED");
+      try {
+        const decoded = decode(bytes, {
+          useTArray: true,
+          formatAsRGBA: false,
+          tolerantDecoding: false,
+          maxResolutionInMP: 3,
+          maxMemoryUsageInMB: 64,
+        });
+        if (
+          decoded.width !== width ||
+          decoded.height !== height ||
+          decoded.data.length !== width * height * 3
+        )
+          throw new Error();
+      } catch {
+        throw new Error("UPLOAD_REJECTED");
+      }
       return { width, height };
     }
     at += length;

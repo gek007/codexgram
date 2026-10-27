@@ -205,6 +205,15 @@ export const runDeletionBatch = internalMutation({
         count = rows.length;
         break;
       }
+      case 14: {
+        const rows = await ctx.db
+          .query("postEdits")
+          .withIndex("by_author_request", (q) => q.eq("authorId", uid))
+          .take(50);
+        for (const r of rows) await ctx.db.delete(r._id);
+        count = rows.length;
+        break;
+      }
       default:
         await ctx.db.patch(jobId, { state: "clerk" });
         await ctx.scheduler.runAfter(0, internal.accounts.deleteClerkIdentity, {

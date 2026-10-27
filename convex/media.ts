@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
 import { requireUser, fail } from "./lib/auth";
 import { charge } from "./lib/limits";
 const purpose = v.union(v.literal("post"), v.literal("avatar"));
@@ -76,5 +76,20 @@ export const deleteAsset = internalMutation({
     if (!asset || asset.state !== "deleting") return;
     if (asset.storageId) await ctx.storage.delete(asset.storageId);
     await ctx.db.delete(assetId);
+  },
+});
+
+export const available = query({
+  args: { assetId: v.id("mediaAssets") },
+  handler: async (ctx, { assetId }) => {
+    const user = await requireUser(ctx);
+    const asset = await ctx.db.get(assetId);
+    return (
+      !!asset &&
+      asset.ownerId === user._id &&
+      asset.state === "pending" &&
+      !!asset.storageId &&
+      asset.expiresAt > Date.now()
+    );
   },
 });

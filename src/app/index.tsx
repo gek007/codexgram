@@ -1,98 +1,57 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
+import React from "react";
+import { Redirect } from "expo-router";
+import { useAuth } from "@clerk/expo";
+import { useSession } from "@/providers/session";
+import { AuthScreen } from "@/features/auth/auth-screen";
+import { Screen } from "@/components/ui/screen";
+import { StateView } from "@/components/ui/state-view";
+import { Button } from "@/components/ui/button";
+export default function Index() {
+  const { isLoaded, isSignedIn, signOut } = useAuth();
+  const { user, loading, error, retry } = useSession();
+  if (!isLoaded || loading)
     return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
+      <Screen>
+        <StateView title="Finding your people…" loading />
+      </Screen>
     );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+  if (!isSignedIn) return <AuthScreen />;
+  if (user && user.status !== "active")
+    return (
+      <Screen>
+        <StateView
+          title="Account unavailable"
+          detail="This account is suspended or being deleted."
+        />
+        <Button secondary label="Sign out" onPress={() => void signOut()} />
+      </Screen>
+    );
+  if (error)
+    return (
+      <Screen>
+        <StateView
+          title="Could not open your account"
+          detail={error}
+          onRetry={retry}
+        />
+        <Button secondary label="Sign out" onPress={() => void signOut()} />
+      </Screen>
+    );
+  if (!user)
+    return (
+      <Screen>
+        <StateView title="Preparing your account…" loading />
+      </Screen>
+    );
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <Redirect
+      href={
+        user.onboardingComplete
+          ? "/(tabs)"
+          : user.username
+            ? "/(onboarding)/communities"
+            : "/(onboarding)/username"
+      }
+    />
   );
 }
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});

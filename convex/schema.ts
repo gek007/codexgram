@@ -51,6 +51,8 @@ export default defineSchema({
     caption: v.string(),
     requestId: v.string(),
     revision: v.number(),
+    initialCaption: v.optional(v.string()),
+    initialAssetId: v.optional(v.id("mediaAssets")),
     editedAt: v.optional(v.number()),
     status,
     likeCount: v.number(),
@@ -141,6 +143,14 @@ export default defineSchema({
     photos: v.number(),
     avatars: v.number(),
   }).index("by_pair", ["userId", "day"]),
+  postEdits: defineTable({
+    authorId: v.id("users"),
+    postId: v.id("posts"),
+    requestId: v.string(),
+    expectedRevision: v.number(),
+    caption: v.optional(v.string()),
+    assetId: v.optional(v.id("mediaAssets")),
+  }).index("by_author_request", ["authorId", "requestId"]),
   deletionJobs: defineTable({
     userId: v.id("users"),
     phase: v.number(),
