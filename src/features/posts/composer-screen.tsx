@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Text, View, Image, Pressable, Alert } from "react-native";
 import { useAuth } from "@clerk/expo";
-import { router } from "expo-router";
+import { router, usePreventRemove } from "expo-router";
 import { randomUUID } from "expo-crypto";
 import {
   useMutation,
@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { StateView } from "@/components/ui/state-view";
 import { errorMessage } from "@/lib/errors";
+import { ComposerHeader } from "./composer-navigation";
 import { PhotoEditor } from "./photo-editor";
 import { selectPhoto, type Photo } from "./media";
 import {
@@ -58,6 +59,7 @@ export function ComposerScreen({
   const [editing, setEditing] = useState<Photo | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const disableRemoval = usePreventRemove(busy);
   const locked = useRef(false);
   const finished = useRef(false);
   const hydrated = useRef(false);
@@ -162,6 +164,7 @@ export function ComposerScreen({
           await clearDraft(draft.ownerId, draft.postId);
         },
       });
+      disableRemoval();
       router.replace({ pathname: "/post/[postId]", params: { postId: id } });
     } catch (e) {
       setError(errorMessage(e));
@@ -226,6 +229,7 @@ export function ComposerScreen({
         !postId && !hasPhoto ? "Choose a community for this photo." : undefined
       }
     >
+      <ComposerHeader busy={busy} />
       {hasPhoto && (
         <Image
           accessibilityLabel="Your photo preview"

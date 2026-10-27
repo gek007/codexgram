@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Screen } from "@/components/ui/screen";
+import { FeedSkeleton } from "@/components/ui/feed-skeleton";
 import { StateView } from "@/components/ui/state-view";
 import { Button } from "@/components/ui/button";
 import { Image } from "expo-image";
@@ -90,35 +91,36 @@ export function FeedList({
         )
       }
       ListEmptyComponent={
-        <View style={{ paddingVertical: 40, gap: 20, alignItems: "center" }}>
-          <StateView
-            loading={status === "LoadingFirstPage"}
-            title={
-              status === "LoadingFirstPage"
-                ? "Loading photos…"
-                : status === "CanLoadMore"
+        status === "LoadingFirstPage" ? (
+          <FeedSkeleton />
+        ) : (
+          <View style={{ paddingVertical: 40, gap: 20, alignItems: "center" }}>
+            <StateView
+              title={
+                status === "CanLoadMore"
                   ? "Keep exploring"
                   : noCommunities
                     ? "Your feed starts here."
                     : "No photos here yet."
-            }
-            detail={
-              status === "CanLoadMore"
-                ? "More photos may be further down the feed."
-                : noCommunities
-                  ? "Join a community to see new photos."
-                  : userId
-                    ? "Photos shared with communities will appear here."
-                    : "Share the first one."
-            }
-          />
-          {noCommunities && (
-            <Button
-              label="Discover communities"
-              onPress={() => router.push("/(tabs)/discover")}
+              }
+              detail={
+                status === "CanLoadMore"
+                  ? "More photos may be further down the feed."
+                  : noCommunities
+                    ? "Join a community to see new photos."
+                    : userId
+                      ? "Photos shared with communities will appear here."
+                      : "Share the first one."
+              }
             />
-          )}
-        </View>
+            {noCommunities && (
+              <Button
+                label="Discover communities"
+                onPress={() => router.push("/(tabs)/discover")}
+              />
+            )}
+          </View>
+        )
       }
       ListFooterComponent={
         status === "CanLoadMore" ? (

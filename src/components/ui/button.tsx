@@ -18,7 +18,7 @@ export function Button({
   loading?: boolean;
   secondary?: boolean;
   danger?: boolean;
-  variant?: "primary" | "secondary" | "tertiary" | "soft";
+  variant?: "primary" | "secondary" | "tertiary" | "soft" | "provider";
   icon?: React.ReactNode;
   iconOnly?: boolean;
 }) {
@@ -30,7 +30,7 @@ export function Button({
     ? colors.danger
     : role === "primary"
       ? colors.onPrimary
-      : role === "soft"
+      : role === "soft" || role === "provider"
         ? colors.text
         : colors.primary;
   return (
@@ -54,8 +54,12 @@ export function Button({
             : role === "soft"
               ? colors.secondary
               : colors.surface,
-        borderWidth: role === "secondary" ? 1 : 0,
-        borderColor: danger ? colors.danger : colors.primary,
+        borderWidth: role === "secondary" || role === "provider" ? 1 : 0,
+        borderColor: danger
+          ? colors.danger
+          : role === "provider"
+            ? colors.border
+            : colors.primary,
         opacity: blocked ? 0.45 : pressed ? 0.75 : 1,
         flexDirection: "row",
         justifyContent: "center",

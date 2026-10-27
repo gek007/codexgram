@@ -7,12 +7,14 @@ import { CommunityArt, communityAccents } from "@/components/ui/community-art";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { useSession } from "@/providers/session";
 import { Illustration } from "@/components/ui/illustration";
 import { Field } from "@/components/ui/field";
 import { errorMessage } from "@/lib/errors";
 import { useTheme } from "@/theme/theme-provider";
 export function CreateCommunityScreen() {
   const { colors } = useTheme();
+  const { user } = useSession();
   const create = useMutation(api.communities.create);
   const [name, setName] = useState("");
   const [handle, setHandle] = useState("");
@@ -90,12 +92,14 @@ export function CreateCommunityScreen() {
           You’re its first member. Share a photo to get things started.
         </Text>
         <Button
-          label="Share a photo"
+          label={user?.onboardingComplete ? "Share a photo" : "Continue setup"}
           onPress={() =>
-            router.replace({
-              pathname: "/compose",
-              params: { communityId: createdId },
-            })
+            user?.onboardingComplete
+              ? router.replace({
+                  pathname: "/compose",
+                  params: { communityId: createdId },
+                })
+              : router.replace("/(onboarding)/communities")
           }
         />
         <Button

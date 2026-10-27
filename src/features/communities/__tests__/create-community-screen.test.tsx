@@ -5,7 +5,11 @@ import { CreateCommunityScreen } from "../create-community-screen";
 const mockCreate = jest
   .fn<(...args: unknown[]) => Promise<string>>()
   .mockResolvedValue("community1");
+let mockOnboardingComplete = true;
 const mockReplace = jest.fn();
+jest.mock("@/providers/session", () => ({
+  useSession: () => ({ user: { onboardingComplete: mockOnboardingComplete } }),
+}));
 jest.mock("convex/react", () => ({ useMutation: () => mockCreate }));
 jest.mock("expo-router", () => ({
   router: { replace: (...args: unknown[]) => mockReplace(...args) },
@@ -77,4 +81,56 @@ test("a rejected creation keeps the form and never displays success", async () =
   );
   expect(screen.queryByText("Your community is ready.")).toBeNull();
   expect(mockReplace).not.toHaveBeenCalled();
+});
+
+test("onboarding creation resumes setup instead of entering the protected composer", async () => {
+  mockReplace.mockClear();
+  mockOnboardingComplete = false;
+  try {
+    const screen = await render(<CreateCommunityScreen />);
+    await fireEvent.changeText(
+      screen.getByLabelText("Community name"),
+      "New community",
+    );
+    await fireEvent.changeText(
+      screen.getByLabelText("Community handle"),
+      "new_community",
+    );
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Create community" }),
+    );
+    expect(
+      await screen.findByRole("button", { name: "Continue setup" }),
+    ).toBeOnTheScreen();
+    expect(screen.queryByRole("button", { name: "Share a photo" })).toBeNull();
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Continue setup" }),
+    );
+    expect(mockReplace).toHaveBeenCalledWith("/(onboarding)/communities");
+  } finally {
+    mockOnboardingComplete = true;
+  }
+});
+
+test("completed accounts can share into the community returned by creation", async () => {
+  mockReplace.mockClear();
+  const screen = await render(<CreateCommunityScreen />);
+  await fireEvent.changeText(
+    screen.getByLabelText("Community name"),
+    "QA Photos",
+  );
+  await fireEvent.changeText(
+    screen.getByLabelText("Community handle"),
+    "qa_photos",
+  );
+  await fireEvent.press(
+    screen.getByRole("button", { name: "Create community" }),
+  );
+  await fireEvent.press(
+    await screen.findByRole("button", { name: "Share a photo" }),
+  );
+  expect(mockReplace).toHaveBeenCalledWith({
+    pathname: "/compose",
+    params: { communityId: "community1" },
+  });
 });

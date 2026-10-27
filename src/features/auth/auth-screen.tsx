@@ -323,7 +323,7 @@ export function AuthScreen({
         <Pressable
           accessibilityRole="button"
           onPress={() => setMode("reset")}
-          style={{ padding: 12 }}
+          style={{ padding: 12, minHeight: 44, justifyContent: "center" }}
         >
           <Text
             style={{
@@ -396,14 +396,14 @@ export function AuthScreen({
             />
           </View>
           <Button
-            secondary
+            variant="provider"
             icon={<ProviderMark provider="google" />}
             label="Continue with Google"
             disabled={busy}
             onPress={() => void social("google")}
           />
           <Button
-            secondary
+            variant="provider"
             icon={<ProviderMark provider="facebook" />}
             label="Continue with Facebook"
             disabled={busy}
