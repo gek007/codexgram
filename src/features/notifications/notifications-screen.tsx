@@ -3,6 +3,7 @@ import { FlatList, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { usePaginatedQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Image } from "expo-image";
 import { Brand } from "@/components/ui/brand";
 import { Screen } from "@/components/ui/screen";
 import { StateView } from "@/components/ui/state-view";
@@ -71,27 +72,47 @@ export function NotificationsScreen() {
                   backgroundColor: colors.secondary,
                 }}
               >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    fontWeight: "700",
-                    color: colors.primary,
-                  }}
-                >
-                  {n.actorUsername[0]?.toUpperCase()}
-                </Text>
+                {n.actorAvatarUrl ? (
+                  <Image
+                    source={n.actorAvatarUrl}
+                    style={{ width: 48, height: 48, borderRadius: 24 }}
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: "700",
+                      color: colors.primary,
+                    }}
+                  >
+                    {n.actorUsername[0]?.toUpperCase()}
+                  </Text>
+                )}
               </View>
               <View style={{ flex: 1, gap: 4 }}>
                 <Text style={{ color: colors.text, lineHeight: 22 }}>
                   <Text style={{ fontWeight: "800" }}>@{n.actorUsername}</Text>{" "}
-                  {n.kind === "like"
-                    ? "liked your photo."
-                    : "commented on your photo."}
+                  {n.kind === "like" ? "liked your photo." : "commented:"}
                 </Text>
+                {!!n.commentText && (
+                  <Text
+                    numberOfLines={2}
+                    style={{ color: colors.text, lineHeight: 21 }}
+                  >
+                    {n.commentText}
+                  </Text>
+                )}
                 <Text style={{ color: colors.muted, fontSize: 12 }}>
                   {new Date(n.createdAt).toLocaleDateString("en")}
                 </Text>
               </View>
+              {!!n.photoUrl && (
+                <Image
+                  source={n.photoUrl}
+                  contentFit="cover"
+                  style={{ width: 52, height: 60, borderRadius: 6 }}
+                />
+              )}
               {!n.readAt && (
                 <View
                   accessibilityLabel="Unread"

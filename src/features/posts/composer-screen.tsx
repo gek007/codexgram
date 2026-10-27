@@ -221,9 +221,7 @@ export function ComposerScreen({
   return (
     <Screen
       insetTop={false}
-      title={
-        postId ? "Edit post" : hasPhoto ? undefined : "Where are you sharing?"
-      }
+      title={postId || hasPhoto ? undefined : "Where are you sharing?"}
       subtitle={
         !postId && !hasPhoto ? "Choose a community for this photo." : undefined
       }
@@ -232,7 +230,12 @@ export function ComposerScreen({
         <Image
           accessibilityLabel="Your photo preview"
           source={{ uri: draft.localPhotoUri ?? post?.photoUrl }}
-          style={{ width: "100%", aspectRatio: 1, borderRadius: 16 }}
+          style={{
+            width: postId ? "100%" : "78%",
+            alignSelf: "center",
+            aspectRatio: 1,
+            borderRadius: 12,
+          }}
         />
       )}
       {!postId && (
@@ -342,7 +345,8 @@ export function ComposerScreen({
         </>
       )}
       <Button
-        secondary
+        variant="soft"
+        icon={<Feather name="image" size={20} color={colors.text} />}
         label={
           hasPhoto ? (postId ? "Replace photo" : "Change photo") : "Add a photo"
         }
@@ -402,14 +406,15 @@ export function ComposerScreen({
       </View>
       {hasPhoto && (
         <Button
-          secondary
+          variant="secondary"
           label="Keep draft"
           disabled={busy}
           onPress={() => router.back()}
         />
       )}
       <Button
-        secondary
+        variant="tertiary"
+        danger
         label="Discard draft"
         disabled={busy}
         onPress={() =>

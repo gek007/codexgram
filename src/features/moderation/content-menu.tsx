@@ -4,7 +4,8 @@ import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Sheet } from "@/components/ui/sheet";
-import { Aperture } from "@/components/ui/brand";
+import { ActionRow } from "@/components/ui/action-row";
+import { Illustration } from "@/components/ui/illustration";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { errorMessage } from "@/lib/errors";
@@ -62,7 +63,7 @@ export function ContentMenu({
     return (
       <Sheet title="Thanks for letting us know." onClose={close}>
         <View style={{ alignItems: "center", paddingVertical: 24, gap: 24 }}>
-          <Aperture size={64} />
+          <Illustration kind="success" size={112} />
           <Text
             style={{
               color: colors.muted,
@@ -145,7 +146,7 @@ export function ContentMenu({
         >
           Reports are reviewed by the app’s admin team.
         </Text>
-        <Button secondary label="Cancel" onPress={close} />
+        <Button variant="soft" label="Cancel" onPress={close} />
       </Sheet>
     );
   return (
@@ -157,8 +158,8 @@ export function ContentMenu({
       }
       onClose={close}
     >
-      <Button
-        secondary
+      <ActionRow
+        icon="flag"
         label={
           target.type === "user" ? "Report account" : `Report ${target.type}`
         }
@@ -168,8 +169,8 @@ export function ContentMenu({
         }}
       />
       {target.type !== "user" && (
-        <Button
-          secondary
+        <ActionRow
+          icon="user"
           label="Report this account"
           onPress={() => {
             setReportAccount(true);
@@ -185,8 +186,8 @@ export function ContentMenu({
           maxLength={500}
         />
       )}
-      <Button
-        secondary
+      <ActionRow
+        icon="slash"
         danger
         label="Block this account"
         disabled={busy}
@@ -210,8 +211,8 @@ export function ContentMenu({
         }
       />
       {canModerate && target.type !== "user" && (
-        <Button
-          secondary
+        <ActionRow
+          icon="trash-2"
           danger
           label="Remove content"
           disabled={busy || !reason.trim()}
@@ -236,8 +237,8 @@ export function ContentMenu({
         />
       )}
       {canModerate && communityId && (
-        <Button
-          secondary
+        <ActionRow
+          icon="user-x"
           danger
           label="Ban author from community"
           disabled={busy}
@@ -267,7 +268,7 @@ export function ContentMenu({
         </Text>
       )}
       {!!message && <Text style={{ color: colors.text }}>{message}</Text>}
-      {onDone && <Button secondary label="Cancel" onPress={onDone} />}
+      {onDone && <Button variant="soft" label="Cancel" onPress={onDone} />}
     </Sheet>
   );
 }

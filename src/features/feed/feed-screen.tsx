@@ -8,7 +8,7 @@ import { Screen } from "@/components/ui/screen";
 import { StateView } from "@/components/ui/state-view";
 import { Button } from "@/components/ui/button";
 import { Image } from "expo-image";
-import { Brand, IconButton, Aperture } from "@/components/ui/brand";
+import { Brand, IconButton } from "@/components/ui/brand";
 import { useTheme } from "@/theme/theme-provider";
 import { PostCard } from "./post-card";
 export function FeedList({
@@ -91,7 +91,6 @@ export function FeedList({
       }
       ListEmptyComponent={
         <View style={{ paddingVertical: 40, gap: 20, alignItems: "center" }}>
-          {status !== "LoadingFirstPage" && <Aperture size={64} />}
           <StateView
             loading={status === "LoadingFirstPage"}
             title={

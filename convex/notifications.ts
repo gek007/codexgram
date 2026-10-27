@@ -43,14 +43,24 @@ export const list = query({
       result.page.map(async (n) => {
         if (!(await canViewAuthor(ctx, user._id, n.actorId))) return null;
         const post = await ctx.db.get(n.postId);
-        if (!post || !(await postView(ctx, user._id, post))) return null;
+        const visiblePost = post ? await postView(ctx, user._id, post) : null;
+        if (!visiblePost) return null;
         const comment = n.commentId ? await ctx.db.get(n.commentId) : null;
         if (n.commentId && comment?.status !== "active") return null;
         const actor = await ctx.db.get(n.actorId);
+        const avatar = actor?.avatarAssetId
+          ? await ctx.db.get(actor.avatarAssetId)
+          : null;
         return {
           id: n._id,
           kind: n.kind,
           actorUsername: actor?.username ?? "member",
+          actorAvatarUrl:
+            avatar?.state === "attached" && avatar.storageId
+              ? await ctx.storage.getUrl(avatar.storageId)
+              : null,
+          photoUrl: visiblePost.photoUrl,
+          commentText: comment?.text ?? null,
           postId: n.postId,
           createdAt: n._creationTime,
           readAt: n.readAt,

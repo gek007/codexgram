@@ -73,6 +73,10 @@ test("likes and comments are idempotent, owned and notify once without self noti
     paginationOpts: { cursor: null, numItems: 30 },
   });
   expect(notes.page).toHaveLength(2);
+  expect(notes.page.find((n) => n.kind === "comment")).toMatchObject({
+    commentText: "Lovely photo",
+    photoUrl: expect.any(String),
+  });
   await expect(
     b.mutation(api.notifications.markRead, {
       notificationId: notes.page[0].id,

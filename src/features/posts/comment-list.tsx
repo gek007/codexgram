@@ -1,9 +1,12 @@
 import React, { useRef, useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, TextInput } from "react-native";
 import { randomUUID } from "expo-crypto";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Feather } from "@expo/vector-icons";
+import { ActionRow } from "@/components/ui/action-row";
+import { Illustration } from "@/components/ui/illustration";
 import { IconButton } from "@/components/ui/brand";
 import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -114,8 +117,8 @@ export function CommentList({
                     })
                   }
                 />
-                <Button
-                  secondary
+                <ActionRow
+                  icon="trash-2"
                   danger
                   label="Delete comment"
                   disabled={busy}
@@ -147,7 +150,7 @@ export function CommentList({
                   </Text>
                 )}
                 <Button
-                  secondary
+                  variant="soft"
                   label="Cancel"
                   onPress={() => setMenu(null)}
                 />
@@ -165,6 +168,7 @@ export function CommentList({
       ))}
       {status === "Exhausted" && !results.length && (
         <View style={{ paddingVertical: 20, gap: 6, alignItems: "center" }}>
+          <Illustration kind="activity" size={72} />
           <Text style={{ color: colors.text, fontWeight: "700" }}>
             Start the conversation
           </Text>
@@ -174,32 +178,57 @@ export function CommentList({
       {status === "CanLoadMore" && (
         <Button secondary label="More comments" onPress={() => loadMore(20)} />
       )}
-      <Field
-        label="Add a comment"
-        multiline
-        value={text}
-        maxLength={1000}
-        editable={!busy}
-        onChangeText={setText}
-        placeholder="Keep the conversation going…"
-      />
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 8,
+          alignItems: "center",
+          backgroundColor: colors.surface,
+          borderRadius: 28,
+          borderWidth: 1,
+          borderColor: colors.border,
+          paddingLeft: 16,
+          paddingRight: 4,
+        }}
+      >
+        <TextInput
+          accessibilityLabel="Add a comment"
+          value={text}
+          maxLength={1000}
+          editable={!busy}
+          onChangeText={setText}
+          placeholder="Add a comment…"
+          placeholderTextColor={colors.muted}
+          multiline
+          style={{
+            flex: 1,
+            minHeight: 48,
+            maxHeight: 132,
+            color: colors.text,
+            fontSize: 16,
+            paddingVertical: 12,
+          }}
+        />
+        <Button
+          iconOnly
+          label="Post comment"
+          loading={busy}
+          disabled={!text.trim()}
+          icon={<Feather name="arrow-up" size={20} color={colors.onPrimary} />}
+          onPress={() =>
+            void run(async () => {
+              await create({ postId, text, requestId: request.current });
+              setText("");
+              request.current = randomUUID();
+            })
+          }
+        />
+      </View>
       {!!error && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}
         </Text>
       )}
-      <Button
-        label="Post comment"
-        loading={busy}
-        disabled={!text.trim()}
-        onPress={() =>
-          void run(async () => {
-            await create({ postId, text, requestId: request.current });
-            setText("");
-            request.current = randomUUID();
-          })
-        }
-      />
     </View>
   );
 }

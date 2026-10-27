@@ -1,11 +1,7 @@
 import React, { useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  PanResponder,
-  Image,
-  useWindowDimensions,
-} from "react-native";
+import { View, Text, PanResponder, useWindowDimensions } from "react-native";
+import { Image } from "expo-image";
+import { Feather } from "@expo/vector-icons";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/theme/theme-provider";
 import { preparePhoto, rotatePhoto, type Photo } from "./media";
@@ -59,6 +55,7 @@ export function PhotoEditor({
       >
         <Image
           source={{ uri: source.uri }}
+          contentFit="fill"
           style={{
             width: scaledWidth,
             height: scaledHeight,
@@ -76,6 +73,7 @@ export function PhotoEditor({
             bottom: 0,
             borderWidth: 2,
             borderColor: "#FFFFFF",
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.65)",
           }}
         >
           {[1, 2].map((n) => (
@@ -87,7 +85,8 @@ export function PhotoEditor({
                   top: 0,
                   bottom: 0,
                   width: 1,
-                  backgroundColor: "rgba(255,255,255,0.6)",
+                  backgroundColor: "rgba(255,255,255,0.9)",
+                  boxShadow: "0 0 0 1px rgba(0,0,0,0.45)",
                 }}
               />
               <View
@@ -97,7 +96,8 @@ export function PhotoEditor({
                   left: 0,
                   right: 0,
                   height: 1,
-                  backgroundColor: "rgba(255,255,255,0.6)",
+                  backgroundColor: "rgba(255,255,255,0.9)",
+                  boxShadow: "0 0 0 1px rgba(0,0,0,0.45)",
                 }}
               />
             </React.Fragment>
@@ -105,7 +105,8 @@ export function PhotoEditor({
         </View>
       </View>
       <Button
-        secondary
+        variant="soft"
+        icon={<Feather name="rotate-cw" size={20} color={colors.text} />}
         label="Rotate 90°"
         loading={busy}
         onPress={() => {
@@ -145,7 +146,7 @@ export function PhotoEditor({
         }}
       />
       <Button
-        secondary
+        variant="tertiary"
         label="Cancel photo"
         disabled={busy}
         onPress={onCancel}
