@@ -8,6 +8,9 @@ export function Button({
   loading = false,
   secondary = false,
   danger = false,
+  variant,
+  icon,
+  iconOnly = false,
 }: {
   label: string;
   onPress: () => void;
@@ -15,9 +18,21 @@ export function Button({
   loading?: boolean;
   secondary?: boolean;
   danger?: boolean;
+  variant?: "primary" | "secondary" | "tertiary" | "soft";
+  icon?: React.ReactNode;
+  iconOnly?: boolean;
 }) {
   const { colors } = useTheme();
   const blocked = disabled || loading;
+  const role = variant ?? (secondary ? "secondary" : "primary");
+  const plain = role === "tertiary";
+  const foreground = danger
+    ? colors.danger
+    : role === "primary"
+      ? colors.onPrimary
+      : role === "soft"
+        ? colors.text
+        : colors.primary;
   return (
     <Pressable
       accessibilityRole="button"
@@ -26,46 +41,49 @@ export function Button({
       disabled={blocked}
       onPress={onPress}
       style={({ pressed }) => ({
-        minHeight: 50,
-        borderRadius: 999,
-        paddingHorizontal: 20,
-        paddingVertical: 14,
-        backgroundColor: secondary
-          ? colors.surface
-          : danger
-            ? colors.danger
-            : colors.primary,
-        borderWidth: 1,
-        borderColor: danger
-          ? colors.danger
-          : secondary
-            ? colors.border
-            : colors.primary,
-        opacity: blocked ? 0.55 : pressed ? 0.8 : 1,
+        minHeight: 48,
+        borderRadius: role === "soft" ? 12 : 999,
+        paddingHorizontal: iconOnly ? 12 : 20,
+        paddingVertical: 12,
+        backgroundColor: plain
+          ? "transparent"
+          : role === "primary"
+            ? danger
+              ? colors.danger
+              : colors.primary
+            : role === "soft"
+              ? colors.secondary
+              : colors.surface,
+        borderWidth: role === "secondary" ? 1 : 0,
+        borderColor: danger ? colors.danger : colors.primary,
+        opacity: blocked ? 0.45 : pressed ? 0.75 : 1,
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        gap: 8,
+        gap: 10,
       })}
     >
-      {loading && (
+      {loading ? (
         <ActivityIndicator
-          color={secondary ? colors.primary : colors.onPrimary}
+          color={role === "primary" ? colors.onPrimary : foreground}
         />
+      ) : (
+        icon
       )}
-      <Text
-        style={{
-          fontSize: 16,
-          fontWeight: "700",
-          color: secondary
-            ? danger
-              ? colors.danger
-              : colors.text
-            : colors.onPrimary,
-        }}
-      >
-        {label}
-      </Text>
+      {!iconOnly && (
+        <Text
+          style={{
+            fontSize: 16,
+            lineHeight: 22,
+            fontWeight: "600",
+            color: role === "primary" ? colors.onPrimary : foreground,
+            flexShrink: 1,
+            textAlign: "center",
+          }}
+        >
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }

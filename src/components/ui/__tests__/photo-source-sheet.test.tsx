@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import { test, expect, jest } from "@jest/globals";
 import { render, fireEvent, act } from "@testing-library/react-native";
 import { PhotoSourceSheet } from "../photo-source-sheet";
+jest.mock("@expo/vector-icons", () => ({ Feather: () => null }));
 let mockDismiss: (() => void) | undefined;
 jest.mock("../sheet", () => ({
   Sheet: ({

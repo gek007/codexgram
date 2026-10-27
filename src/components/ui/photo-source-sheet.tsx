@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Platform } from "react-native";
 import { Sheet } from "./sheet";
+import { ActionRow } from "./action-row";
 import { Button } from "./button";
 
 /** UIKit must finish dismissing this presenter before opening the native picker. */
@@ -34,13 +35,17 @@ export function PhotoSourceSheet({
       onDismiss={finish}
       onClose={() => dismiss()}
     >
-      <Button secondary label="Take a photo" onPress={() => dismiss(true)} />
-      <Button
-        secondary
+      <ActionRow
+        icon="camera"
+        label="Take a photo"
+        onPress={() => dismiss(true)}
+      />
+      <ActionRow
+        icon="image"
         label="Choose from library"
         onPress={() => dismiss(false)}
       />
-      <Button secondary label="Cancel" onPress={() => dismiss()} />
+      <Button variant="soft" label="Cancel" onPress={() => dismiss()} />
     </Sheet>
   );
 }

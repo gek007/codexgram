@@ -1,6 +1,7 @@
 import React from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { useTheme } from "@/theme/theme-provider";
+import { Illustration } from "./illustration";
 import { Button } from "./button";
 export function StateView({
   title,
@@ -15,8 +16,19 @@ export function StateView({
 }) {
   const { colors } = useTheme();
   return (
-    <View style={{ padding: 28, gap: 14, alignItems: "center" }}>
-      {loading && <ActivityIndicator color={colors.primary} />}
+    <View
+      style={{
+        paddingVertical: 40,
+        paddingHorizontal: 12,
+        gap: 14,
+        alignItems: "center",
+      }}
+    >
+      {loading ? (
+        <ActivityIndicator color={colors.primary} />
+      ) : (
+        <Illustration kind="photo" size={128} />
+      )}
       <Text
         style={{
           fontSize: 20,

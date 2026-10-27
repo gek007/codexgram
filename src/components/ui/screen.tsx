@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { type, spacing } from "@/theme/design";
 import { useTheme } from "@/theme/theme-provider";
 export function Screen({
   children,
@@ -27,8 +28,8 @@ export function Screen({
   const content = (
     <View
       style={{
-        padding: 20,
-        gap: 20,
+        padding: spacing.page,
+        gap: spacing.control,
         flexGrow: 1,
         ...(!scroll ? { flex: 1 } : {}),
         width: "100%",
@@ -41,10 +42,7 @@ export function Screen({
           <Text
             accessibilityRole="header"
             style={{
-              fontSize: 32,
-              fontWeight: "700",
-              lineHeight: 38,
-              letterSpacing: -1.1,
+              ...type.display,
               color: colors.text,
             }}
           >

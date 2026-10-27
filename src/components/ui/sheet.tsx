@@ -57,16 +57,23 @@ export function Sheet({
               borderRadius: 3,
               alignSelf: "center",
               marginTop: 10,
-              marginBottom: 20,
+              marginBottom: 16,
             }}
           />
           <ScrollView
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
           >
             <Text
               accessibilityRole="header"
-              style={{ fontSize: 23, fontWeight: "700", color: colors.text }}
+              style={{
+                fontSize: 20,
+                lineHeight: 26,
+                fontWeight: "700",
+                color: colors.text,
+                textAlign: "center",
+                marginBottom: 6,
+              }}
             >
               {title}
             </Text>

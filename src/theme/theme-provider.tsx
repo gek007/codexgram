@@ -5,7 +5,7 @@ const light = {
   background: "#FAF9F6",
   surface: "#FFFFFF",
   text: "#202024",
-  muted: "#686870",
+  muted: "#686670",
   border: "#E3E1E8",
   primary: "#5B36E8",
   onPrimary: "#FFFFFF",
