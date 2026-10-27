@@ -1,6 +1,87 @@
-import React from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '@/theme/theme-provider';
-export function Screen({children,title,subtitle,scroll=true}:{children:React.ReactNode;title?:string;subtitle?:string;scroll?:boolean}) {const {colors}=useTheme();const content=<View style={{padding:22,gap:20,flexGrow:1}}>{title&&<View style={{gap:8}}><Text accessibilityRole="header" style={{fontSize:32,fontWeight:'800',letterSpacing:-1,color:colors.text}}>{title}</Text>{subtitle&&<Text style={{fontSize:16,lineHeight:24,color:colors.muted}}>{subtitle}</Text>}</View>}{children}</View>;return <SafeAreaView edges={['left','right','bottom']} style={{flex:1,backgroundColor:colors.background}}><KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS==='ios'?'padding':undefined}>{scroll?<ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{flexGrow:1}}>{content}</ScrollView>:content}</KeyboardAvoidingView></SafeAreaView>;}
-export function Body({children}:{children:React.ReactNode}){const {colors}=useTheme();return <Text style={{fontSize:16,lineHeight:24,color:colors.text}}>{children}</Text>;}
+import React from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/theme/theme-provider";
+export function Screen({
+  children,
+  title,
+  subtitle,
+  scroll = true,
+}: {
+  children: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+  scroll?: boolean;
+}) {
+  const { colors } = useTheme();
+  const content = (
+    <View
+      style={{
+        padding: 22,
+        gap: 20,
+        flexGrow: 1,
+        width: "100%",
+        maxWidth: 640,
+        alignSelf: "center",
+      }}
+    >
+      {title && (
+        <View style={{ gap: 8 }}>
+          <Text
+            accessibilityRole="header"
+            style={{
+              fontSize: 32,
+              fontWeight: "800",
+              letterSpacing: -1,
+              color: colors.text,
+            }}
+          >
+            {title}
+          </Text>
+          {subtitle && (
+            <Text style={{ fontSize: 16, lineHeight: 24, color: colors.muted }}>
+              {subtitle}
+            </Text>
+          )}
+        </View>
+      )}
+      {children}
+    </View>
+  );
+  return (
+    <SafeAreaView
+      edges={["top", "left", "right", "bottom"]}
+      style={{ flex: 1, backgroundColor: colors.background }}
+    >
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        {scroll ? (
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {content}
+          </ScrollView>
+        ) : (
+          content
+        )}
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+export function Body({ children }: { children: React.ReactNode }) {
+  const { colors } = useTheme();
+  return (
+    <Text style={{ fontSize: 16, lineHeight: 24, color: colors.text }}>
+      {children}
+    </Text>
+  );
+}
