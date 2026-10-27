@@ -1,11 +1,11 @@
 # Codexgram beta acceptance record
 
-Date: 2026-10-27. This record distinguishes observed results from pending checks.
+Updated: 2026-10-28. This record distinguishes observed results from pending checks.
 
 ## Verified locally
 
 - Automated backend and pure-client tests cover identity isolation, username/community uniqueness, membership/onboarding, media ownership/validation, daily quotas, safe publish/edit retries, source pagination, blocking, comments/likes/notifications, creator/admin authorization, account deletion and signed webhooks.
-- Final automated result: **31 passing tests** (26 backend/pure-client, 5 UI). UI coverage includes disabled/loading controls, authenticated onboarding navigation, welcome/sign-in paths, report reason submission/confirmation, and invalid community handle rejection before network submission.
+- Final automated result: **34 passing tests** (26 backend/pure-client, 8 UI). UI coverage includes disabled/loading controls, authenticated onboarding navigation, welcome/sign-in paths, report reason submission/confirmation, invalid community handle rejection before network submission, and photo-source dismissal ordering/cancellation.
 - Lint and TypeScript checks pass after excluding archived `example/` code.
 - `expo-doctor`: 20/20 checks passed.
 - iOS and Android JavaScript exports completed again after the design integration.
@@ -29,9 +29,9 @@ Date: 2026-10-27. This record distinguishes observed results from pending checks
 | Android native build/install | Cloud build pending; installation not observed |
 | iOS physical build/install | Apple credentials and registered devices pending |
 | Development-client QR opening | Requires installed builds and reachable running server |
-| Google and Facebook round-trips | Google reached username onboarding in a real web session; authenticated onboarding also observed natively. Full provider checks on both physical platforms remain pending |
+| Google and Facebook round-trips | Google completed native simulator sign-out/sign-in and returned to the same account Home; Facebook native prompt cancellation recovered. Facebook completion and both providers on physical platforms remain pending |
 | Email signup/verification/recovery and restart | SDK integration and orchestration checked; real-device session evidence pending |
-| Camera/library/crop/rotate on both OSes | Implementation and native bundling verified; device behavior pending |
+| Camera/library/crop/rotate on both OSes | iOS simulator library, crop/rotate completion and publish observed; detailed image framing, physical camera and Android remain pending |
 | Two real accounts across iOS/Android | Pending installed builds |
 | Owner/admin report handler | `APP_ADMIN_CLERK_IDS` must be set to the owner's verified Clerk ID after signup |
 | Externally deleted Clerk accounts | Verified webhook receiver implemented/tested; dashboard endpoint and signing secret still need registration |
@@ -51,4 +51,4 @@ Source: `output/design/codexgram-beta/01–14` and `design-notes.txt`, supplied 
 - Post/comment options and report reasons in native bottom sheets; report confirmation; settings and destructive action styling.
 - Brand covers are local vector adaptations of the supplied illustrations. Welcome uses these covers rather than copied sample photographs. Sample users, photos and communities were not seeded into the live backend.
 - Mockup assumptions such as a custom legal document, an appearance override, resolved-report browsing and a separate creator member directory were not added as new requirements. Device appearance and the approved creator controls remain authoritative. The installed development client's launcher icon remains the earlier camera icon until a later native branding rebuild.
-- Observed visual checks: clean dark web welcome/sign-in, native light onboarding empty state and creation form. Populated feeds, profile grids, action sheets and media states still require the two-account physical-device acceptance run. No claim of pixel-perfect coverage of every raster mockup is made.
+- Native simulator audit now covers populated Home, Discover/search, community/creator tools, composer/library/crop/draft/publish, post/comment editing, profile grid/edit, settings, empty Activity/Blocked accounts, deletion cancellation, auth entry forms and dark appearance. See [the detailed audit](ios-simulator-audit-2026-10-28.md) for exact coverage, the fixed photo-picker blocker and remaining findings. Two-account and physical-device acceptance remains pending. No claim of pixel-perfect coverage of every raster mockup is made.

@@ -5,14 +5,24 @@ export function Sheet({
   title,
   children,
   onClose,
+  visible = true,
+  onDismiss,
 }: {
   title: string;
   children: React.ReactNode;
   onClose: () => void;
+  visible?: boolean;
+  onDismiss?: () => void;
 }) {
   const { colors } = useTheme();
   return (
-    <Modal transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      transparent
+      animationType="slide"
+      visible={visible}
+      onDismiss={onDismiss}
+      onRequestClose={onClose}
+    >
       <View
         style={{
           flex: 1,

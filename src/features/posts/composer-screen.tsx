@@ -14,7 +14,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { useSession } from "@/providers/session";
 import { useTheme } from "@/theme/theme-provider";
 import { Feather } from "@expo/vector-icons";
-import { Sheet } from "@/components/ui/sheet";
+import { PhotoSourceSheet } from "@/components/ui/photo-source-sheet";
 import { CommunityArt } from "@/components/ui/community-art";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
@@ -433,25 +433,10 @@ export function ComposerScreen({
         }
       />
       {sources && (
-        <Sheet title="Add a photo" onClose={() => setSources(false)}>
-          <Button
-            secondary
-            label="Take a photo"
-            onPress={() => {
-              setSources(false);
-              void choose(true);
-            }}
-          />
-          <Button
-            secondary
-            label="Choose from library"
-            onPress={() => {
-              setSources(false);
-              void choose(false);
-            }}
-          />
-          <Button secondary label="Cancel" onPress={() => setSources(false)} />
-        </Sheet>
+        <PhotoSourceSheet
+          onClose={() => setSources(false)}
+          onSelect={(camera) => void choose(camera)}
+        />
       )}
     </Screen>
   );

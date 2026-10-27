@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Text, View, Alert } from "react-native";
 import { Image } from "expo-image";
-import { Sheet } from "@/components/ui/sheet";
+import { PhotoSourceSheet } from "@/components/ui/photo-source-sheet";
 
 import { router } from "expo-router";
 import { randomUUID } from "expo-crypto";
@@ -249,31 +249,16 @@ export function AccountSettingsScreen({
         </>
       )}
       {sources && (
-        <Sheet title="Choose profile photo" onClose={() => setSources(false)}>
-          <Button
-            secondary
-            label="Camera"
-            onPress={() => {
-              setSources(false);
-              void act(async () => {
-                const p = await selectPhoto(true);
-                if (p) setPhoto(p);
-              });
-            }}
-          />
-          <Button
-            secondary
-            label="Photo library"
-            onPress={() => {
-              setSources(false);
-              void act(async () => {
-                const p = await selectPhoto(false);
-                if (p) setPhoto(p);
-              });
-            }}
-          />
-          <Button secondary label="Cancel" onPress={() => setSources(false)} />
-        </Sheet>
+        <PhotoSourceSheet
+          title="Choose profile photo"
+          onClose={() => setSources(false)}
+          onSelect={(camera) =>
+            void act(async () => {
+              const p = await selectPhoto(camera);
+              if (p) setPhoto(p);
+            })
+          }
+        />
       )}
     </Screen>
   );
