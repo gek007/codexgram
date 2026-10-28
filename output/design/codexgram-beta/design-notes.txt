@@ -1,0 +1,35 @@
+CODEXGRAM BETA — VISUAL DESIGN SET
+Source: docs/superpowers/specs/2026-10-27-codexgram-beta-design.md
+Created with built-in image_gen; raster visual designs.
+
+Product: public photo communities for signed-in beta testers.
+Primary users: community members sharing and discussing photos; community creators moderating their own spaces; app admins reviewing reports.
+Primary action: publish one photo to a joined community.
+Activation: create/verify account, choose a username, join at least one community, reach Home.
+Recurring journey: newest-first community feed → photo → like or flat comment → in-app activity → photo.
+Authentication: email/password, Google, Facebook; email verification and password recovery; missing provider requirements before onboarding.
+Permissions: request camera or photo-library access when used; denied-state alternatives are on board 14.
+Roles: creators remove content and ban members; admins resolve reports, remove content and suspend accounts.
+Free English-only beta. No subscriptions, ads, video, albums, filters, DMs, following, private communities, threaded replies, remote push or automatic offline queue.
+
+Design assumptions: violet brand; warm ivory surfaces; aperture wordmark; rounded modern sans-serif typography; expressive color-led community identities; sample names, photographs and copy; standard report reasons; Light/Dark/device appearance selection. Sample creation and creator/admin screens are alternate role branches, not one chronological session. These assumptions are design choices, not additional approved product requirements.
+
+FILES
+01-design-system.png — palette, type, spacing, components, variants, light/dark tokens
+02-journey-map.png — screen inventory and navigation grouped by journey
+03-welcome-auth.png — splash, welcome, sign-in, account creation
+04-verify-recover.png — verification, password recovery, reset, incomplete OAuth
+05-onboarding-discovery.png — username, initial joins, directory, community search
+06-communities.png — public preview, joined feed, create, created
+07-compose.png — joined-community selection, sources/camera, crop/rotate, preview/caption
+08-publish-edit.png — uploading, published post, own-post editing/replacement, edited result
+09-feed-interaction.png — Home, post/comments, own-comment editing/deletion, Activity
+10-profiles.png — own/public profile, profile editing/avatar source, post deletion
+11-report-block.png — content actions, report reasons, sent, mutual block confirmation
+12-moderation.png — creator removal, community ban, admin inbox, report review/suspension
+13-account-dark.png — settings, blocked accounts/unblock, deletion, dark Home
+14-important-states.png — empty, loading, offline, retry draft, permissions, quotas, unavailable, suspended, success
+prompts.txt — generation prompts and targeted correction prompts
+
+Product limits remain authoritative in the source spec: 10 successful new posts/day; 20 post/replacement photo uploads/day; 5 avatar uploads/day, resetting at 00:00 UTC. Captions max 2,000 characters. Photo replacement retains engagement and shows Edited. Retry preserves the local draft without duplicating the post. Sign-out clears the account's local draft. Account deletion disables access immediately, removes authored content and archives created communities.
+

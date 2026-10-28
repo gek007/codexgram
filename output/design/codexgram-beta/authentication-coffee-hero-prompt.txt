@@ -1,0 +1,11 @@
+Mode: built-in image_gen
+Use case: photorealistic-natural.
+Asset type: photographic hero asset for the Codexgram mobile sign-in screen.
+Primary request: a beautiful, inviting cup of coffee, photographed with quiet editorial sophistication; warm and human, complementing an ivory and violet mobile interface.
+Scene/backdrop: a small light-oak table beside a softly lit window, warm ivory wall and a gently blurred hint of a houseplant in the background.
+Subject: one tactile handmade ivory ceramic cup filled with fresh coffee, delicate natural steam rising from its surface. A small understated saucer underneath. No other cups.
+Style/medium: photorealistic premium lifestyle photography; real ceramic texture, believable coffee surface, subtle wood grain, soft photographic depth of field, no plastic or artificial rendering.
+Composition/framing: landscape photograph approximately 3:2, intended as a shallow full-width mobile hero crop. Cup placed near the center, with generous clean breathing room around it and above it so rounded crops remain attractive; main cup fully visible, medium close-up at a natural three-quarter viewing angle. Image must read clearly when displayed at a small phone width.
+Lighting/mood: gentle morning window sunlight from the side, broad soft shadows, peaceful everyday ritual, cozy without being dark.
+Color palette: creamy whites, warm beige, light oak, rich coffee brown, restrained muted green in distant background. Avoid dominant orange/yellow cast; whites remain creamy and clean.
+Constraints: image asset only; no phone, UI, screen, text, wordmark, branding, watermark, people, hands, extra props, decorative graphics or colored gradients. Polished but natural, understated, welcoming. Opaque photographic background.

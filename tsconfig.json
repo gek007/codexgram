@@ -16,5 +16,12 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "example",
+    "node_modules",
+    "ios",
+    "android",
+    ".superpowers"
   ]
 }

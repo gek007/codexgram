@@ -41,3 +41,12 @@ example
 # generated native folders
 /ios
 /android
+
+.env*
+!.env.example
+coverage/
+.superpowers/
+
+# Local IDE and browser automation state
+.idea/
+.playwright-mcp/

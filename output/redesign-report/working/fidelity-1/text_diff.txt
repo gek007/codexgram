@@ -1,0 +1,104 @@
+--- a
++++ b
+@@ -1,7 +1,7 @@
+-Report title
+-Short subtitle describing the report up to two lines of text
+-Prepared by [Author]
+-[Month YYYY]
++Codexgram redesign
++Visual design for the original fourteen screen boards
++Prepared for Codexgram
++October 2026
+ Contents
+ Executive summary2
+ At a glance2
+@@ -14,53 +14,53 @@
+ Conclusion4
+ Appendix5
+ Notes5
+-Source placeholders5
++Sources5
+ Executive summary
+-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
++Bring the existing Codexgram beta closer to the original fourteen design boards across iOS and Android. The selected direction keeps sign-in free of the newer coffee hero and applies the supplied violet and ivory visual system to every existing journey.
++The app already has the palette, core routes and connected data flows. The redesign should improve visual fidelity through consistent typography, spacing, image treatment, navigation and action hierarchy while protecting the working authentication, publishing and moderation behavior.
+ At a glance
+-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
++Selected direction B covers the original boards 01 to 14. The newer standalone authentication and coffee variants are excluded.
++Prioritize shared controls, original authentication, discovery and community layouts, then publishing, engagement, profiles and account screens.
++Accept changes through reference comparisons and native checks. Preserve real account data, accessible controls, safe drafts and upload retries.
+ Introduction
+-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
++Codexgram is a public photo community beta with email, Google and Facebook authentication. Members join communities, publish one photo at a time, and interact through likes, comments and in-app activity. Creators and app admins have distinct moderation powers.
++This report translates the selected images into a visual contract for existing screens. The detailed implementation scope is recorded in the companion repository design document dated 28 October 2026.
+ Key findings
+-Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
++The first design integration established the basic identity, but several interfaces still use generic button stacks and repeated headings. The supplied boards give stronger guidance for compact metadata, icon rows, imagery, grouped settings and distinct action types.
+ Context and conditions
+-Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.
++The iOS audit verified library selection, publishing, drafts, post and comment editing, profiles and Google sign-in. It also found duplicate titles, an unclear composer exit and crop guides that lose contrast on a white image. These are included in this pass.
+ Patterns in the evidence
+-Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat.
+-Key takeaway. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti.
++The palette already closely matches board 01. More of the remaining difference comes from composition: generous but deliberate spacing, a stronger type hierarchy, photo-first cards, compact action rows and clear primary versus secondary controls.
++Design priority. Improve composition and clarity while retaining the tested data and permission boundaries.
+ Implications
+-Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit.
++A shared component pass will improve many screens together. Screen-specific work is still needed for welcome imagery, community identity, composer stages, profile layout and grouped settings.
+ Theme
+ Observation
+ Implication
+-Lorem
+-Dolor sit amet
+-Consectetur adipiscing
+-Ipsum
+-Sed do eiusmod
+-Tempor incididunt
+-Dolor
+-Ut labore et dolore
+-Magna aliqua
++Hierarchy
++Repeated titles and button stacks
++Use one title and distinct action styles
++Media
++Photo-first reference layouts
++Preserve photo scale and compact metadata
++Reliability
++Picker race fixed in prior audit
++Retain dismissal ordering and draft safety
+ Recommendations
+-Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.
+-Clarify the objective. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+-Sequence the work. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+-Review the outcome. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
++Implement the selected boards in controlled groups. Compare each group at a consistent phone viewport and keep platform-specific navigation and accessibility behavior functional.
++Unify the foundation. Apply board 01 type, spacing, field, button and sheet roles. Add provider icons, focus and error treatment, compact action rows and clear loading states.
++Refine the journeys. Match original welcome and auth first, then onboarding and communities, composer and feed, profiles, safety and settings. Recreate interactive controls natively; keep real content and roles.
++Verify the result. Run lint, typecheck and regression tests. Compare light and dark screens, short heights, keyboard states and larger text. Record unavailable device or role checks honestly.
+ Conclusion
+-Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
+-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
++The selected approach is a visual refinement of the connected app. It does not require a new backend, UI framework, seeded sample accounts or changes to publishing limits and moderation authority.
++Review the companion design contract before implementation. Success means closer reference fidelity with reachable actions, readable text, working navigation and unchanged data integrity.
+ Appendix
+ Notes
+-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.
+-Suspendisse potenti. Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien. Proin quam. Etiam ultrices.
+-Source placeholders
+-[Author or organization]. [Source title]. [Publisher], [Year].
+-[Author or organization]. [Report or article title]. [Month Year].
+-[Dataset owner]. [Dataset name and version]. Accessed [Month Year].
+-[Interviewee or team]. [Interview or workshop notes]. [Date].
+-Template note. Replace bracketed placeholders, update the table of contents, and confirm page references before publishing.
++The original boards remain the visual authority. Do not copy phone frames, status-bar artwork, sample identities or fake engagement into production screens. Welcome decoration may reuse clean supplied imagery; user feeds continue to show actual data.
++Intentional adaptations retain device-controlled appearance, native camera and library interfaces, accessible code entry and sequential SDK reset steps. Do not add legal URLs, member directories or resolved-report browsing merely because a mockup depicts them.
++Sources
++Supplied design set. Boards 01 to 04 cover components, journeys, welcome, authentication and recovery.
++Supplied design set. Boards 05 to 10 cover onboarding, communities, publishing, feeds, comments and profiles.
++Supplied design set. Boards 11 to 14 cover reporting, moderation, settings, dark appearance and important states.
++Repository evidence. Design notes, current UI components and iOS simulator audit dated 28 October 2026.
++Acceptance boundary. Facebook completion, second-user and admin flows, physical camera and larger text remain separate native acceptance checks.

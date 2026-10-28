@@ -1,0 +1,18 @@
+Mode: built-in image_gen
+Use case: ui-mockup.
+Asset type: one standalone high-resolution Codexgram mobile SIGN-IN SCREEN, portrait, matching the supplied approved design reference.
+Input image: style and layout reference only. The reference contains four screens; create ONLY its third screen (Sign in), expanded as one beautiful crisp full-screen portrait image. No multi-screen board.
+Primary request: premium high-fidelity mobile authentication interface for a photo-community app, clean warm ivory #FAF9F6 background, ink #202024, muted #686870, vivid violet #5B36E8 accents, fine #E3E1E8 borders, modern rounded grotesk sans-serif, strong yet warm editorial hierarchy. Preserve the visual identity and composition of the reference sign-in screen.
+Composition: straight-on flat screen artwork, approximately 393x852 point proportions, high-resolution portrait with generous safe areas. Screen fills the canvas edge-to-edge; no physical phone chassis, no outer board, no explanatory labels. Realistic small 9:41 system status bar and bottom home indicator. At top a 44pt back-arrow hit area. Spacious content area, left aligned.
+Exact UI content top to bottom:
+Large semibold headline "Good to see you."
+Muted subtitle "Sign in to your Codexgram account."
+Labeled input "Email", field content "mayachen@example.com".
+Labeled input "Password", masked password bullets with outline eye visibility icon.
+Right aligned violet link "Forgot password?"
+Full-width solid-violet pill primary button "Sign in", white semibold 16pt text.
+Fine divider with centered "or".
+Outlined white rounded button with correct multicolor Google G icon and exact label "Continue with Google".
+Outlined white rounded button with correct blue Facebook f icon and exact label "Continue with Facebook".
+Near bottom centered "New here? Create account", with Create account in violet.
+Design constraints: 24pt horizontal gutters, approximately 52pt input/button heights, 12pt input radius, pill primary button, 16pt body, 32pt display headline, 8pt spacing system, recognizable consistent thin outline icons. Calm intentional whitespace, accessible contrast, readable real mobile scale. No photography, illustration, gradients, decorative cards, shadows, top logo additions, Apple sign-in, phone login, navigation tabs, extra providers, or extra controls. Render every English word accurately. This is a visual screen design, not code.

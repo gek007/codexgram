@@ -1,56 +1,40 @@
-# Welcome to your Expo app 👋
+https://www.youtube.com/watch?v=FegYRu-swbA&t=822s
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Codexgram
 
-## Get started
+An iOS and Android photo-community app built with Expo SDK 58, Expo Router, Clerk and Convex. Users join public topic communities, publish photos, like/comment, and receive in-app activity notifications. Email/password, Google and Facebook sign-in are included. Remote push is deferred.
 
-1. Install dependencies
+## Develop
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```sh
+npm ci
+# Configure .env.local using .env.example; do not overwrite an existing local file.
+npx convex dev
+# In another terminal, after installing a development build:
+npm run start:dev
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+The project QR opens Codexgram in the installed development build. This beta uses development builds rather than Expo Go for OAuth. See [the beta runbook](docs/beta-testing.md) for installation, signing, callbacks and backend settings.
 
-### Other setup steps
+## Verify
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```sh
+npm run lint
+npm run typecheck
+npm test
+npx expo-doctor
+```
 
-## Learn more
+Backend tests use Convex's local test runtime and do not mutate the cloud deployment. Native exports verify JavaScript bundling; physical device installation and OAuth testing are separate acceptance steps.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- `src/app/`: Expo Router routes and layouts.
+- `src/features/`: auth, communities, feed, photos, profiles and moderation screens.
+- `src/components/ui/`, `src/theme/`, `src/providers/`: shared mobile UI and providers.
+- `convex/`: schema, backend rules, file ingestion, moderation, cleanup and tests.
+- [Product specification](docs/superpowers/specs/2026-10-27-codexgram-beta-design.md)
+- [Implementation plan](docs/superpowers/plans/2026-10-27-codexgram-beta.md)
+- [Acceptance record](docs/beta-acceptance.md)
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Application access is checked on the backend; client navigation guards are not a security boundary. Photos are stored in Convex; app blocking does not revoke a previously copied storage URL. Local drafts are cleared on sign-out, discard and successful publishing.
