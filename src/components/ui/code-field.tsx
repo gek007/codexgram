@@ -59,6 +59,8 @@ export function CodeField({
           position: "absolute",
           width: "100%",
           height: 58,
+          // Android composing spans can override transparent text paint.
+          opacity: 0.01,
           color: "transparent",
           backgroundColor: "transparent",
         }}

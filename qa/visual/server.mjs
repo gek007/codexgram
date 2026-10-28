@@ -45,7 +45,7 @@ const server = await createServer({
         let imports = "";
         let n = 0;
         code = code.replace(
-          /require\(["']([^"']+\.(?:png|jpg))["']\)/g,
+          /require\(["']([^"']+\.(?:png|jpg|svg))["']\)/g,
           (_, p) => {
             let name = "asset" + n++;
             imports += `import ${name} from ${JSON.stringify(p)};\n`;
