@@ -21,9 +21,10 @@ function Navigation() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="account" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="continue" options={{ headerShown: false }} />
-        <Stack.Protected guard={user?.status === "active"} redirectTo="/">
+        <Stack.Protected guard={user?.status === "active"} redirectTo="/account">
           <Stack.Screen name="(onboarding)/username" options={{ title: "" }} />
           <Stack.Screen
             name="(onboarding)/communities"
@@ -37,7 +38,7 @@ function Navigation() {
         </Stack.Protected>
         <Stack.Protected
           guard={user?.status === "active" && !!user.onboardingComplete}
-          redirectTo="/"
+          redirectTo="/account"
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen

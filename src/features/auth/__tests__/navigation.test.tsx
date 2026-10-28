@@ -30,11 +30,12 @@ jest.mock("@/providers/session", () => ({
 jest.mock("@/providers/app-providers", () => ({
   AppProviders: ({ children }: { children: React.ReactNode }) => children,
 }));
-test("an authenticated new user reaches username onboarding without a redirect cycle", async () => {
+async function renderApp(initialUrl = "/") {
   await renderRouter(
     {
       _layout: RootLayout,
       index: Index,
+      account: Index,
       "(auth)/_layout": AuthLayout,
       "(auth)/sign-in": Index,
       "(tabs)/_layout": TabsLayout,
@@ -55,7 +56,15 @@ test("an authenticated new user reaches username onboarding without a redirect c
       "settings/blocked": () => null,
       "admin/reports": () => null,
     },
-    { initialUrl: "/" },
+    { initialUrl },
   );
+}
+test("an authenticated new user reaches username onboarding without a redirect cycle", async () => {
+  await renderApp();
   expect(screen.getByText("Choose a username")).toBeOnTheScreen();
+});
+test("a suspended session opening a protected tab reaches account status", async () => {
+  mockUser.status = "suspended";
+  await renderApp("/(tabs)");
+  expect(screen.getByText("Account unavailable")).toBeOnTheScreen();
 });

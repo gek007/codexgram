@@ -15,6 +15,9 @@ EXPO_PUBLIC_CONVEX_SITE_URL=http://127.0.0.1:1 \
 npx expo start --dev-client --port 8086 --android
 ```
 
+For iOS, use `--ios` instead of `--android`; the simulator needs the installed
+iOS development build. Use a separate port if another Metro server is running.
+
 Use the floating **QA** menu to select any of 31 scenarios. **NEXT QA** advances.
 Navigation, native controls, image picker, image manipulation, rendering, forms,
 validation and app error handling remain real. Service responses are simulated.
@@ -29,4 +32,6 @@ node qa/native/check-isolation.cjs
 This check verifies default resolution and both production rejection paths.
 `crop.py`/`contact.py` process screenshots already captured through computer use;
 they do not capture or control the emulator. Update crop bounds after resizing
-Android Studio. The QA report and screenshot gallery live in `output/qa/android/`.
+Android Studio. The screenshot galleries live in `output/qa/android/` and `output/qa/ios/`.
+Platform QA reports are in `docs/android-qa-2026-10-28.md` and
+`docs/ios-qa-2026-10-28.md`.
