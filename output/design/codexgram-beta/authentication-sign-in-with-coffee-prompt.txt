@@ -1,0 +1,19 @@
+Mode: built-in image_gen
+Use case: compositing.
+Image 1 is the EDIT TARGET: existing Codexgram sign-in screen.
+Image 2 is the SUPPORTING INSERT: exact coffee photograph.
+Edit the existing auth screen by placing the supplied coffee photograph into its layout as a polished wide hero image near the top, below the status bar/back action and above "Good to see you." Use a wide approximately 2.4:1 crop with 20pt rounded corners, preserving the ivory ceramic cup as the focal point and the warm window light; photograph must be clearly recognizable as image2. Keep the cup and handle visible.
+Preserve the existing screen's portrait 393x852 point proportions, ivory background, rounded modern sans typography, violet brand color, fine input borders and all authentication content and controls. Reflow vertical spacing thoughtfully to fit the photo without crowding or clipping: reduce the excessive blank space above the heading and the gaps between form sections; headline around28pt and body16pt, labels14pt; controls remain about48pt high with comfortable touch targets. The inserted photo should feel integrated into a real usable mobile sign-in screen, not an overlay pasted on top of fields. 24pt horizontal margins, photo around120pt high; retain safe areas and bottom home indicator.
+Exact existing content retained:
+"Good to see you."
+"Sign in to your Codexgram account."
+"Email"
+"mayachen@example.com"
+"Password" with masked bullets and eye icon
+"Forgot password?"
+"Sign in"
+"or"
+"Continue with Google" with correct Google G
+"Continue with Facebook" with correct Facebook f
+"New here? Create account"
+Keep 9:41 status bar and back arrow. No additional providers, text, logos, tabs, new features, physical phone frame, outer annotations or separate photo panel. Output ONE complete, high-resolution portrait auth-screen image with the coffee photo integrated. Preserve the photo's natural colors and the UI's violet/ivory identity.

@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=FegYRu-swbA&t=822s
+
 # Codexgram
 
 An iOS and Android photo-community app built with Expo SDK 58, Expo Router, Clerk and Convex. Users join public topic communities, publish photos, like/comment, and receive in-app activity notifications. Email/password, Google and Facebook sign-in are included. Remote push is deferred.

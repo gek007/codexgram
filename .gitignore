@@ -46,3 +46,7 @@ example
 !.env.example
 coverage/
 .superpowers/
+
+# Local IDE and browser automation state
+.idea/
+.playwright-mcp/
