@@ -61,9 +61,16 @@ export function ContentMenu({
   ];
   if (stage === "sent")
     return (
-      <Sheet title="Thanks for letting us know." onClose={close}>
-        <View style={{ alignItems: "center", paddingVertical: 24, gap: 24 }}>
-          <Illustration kind="success" size={112} />
+      <Sheet expanded title="Thanks for letting us know." onClose={close}>
+        <View
+          style={{
+            alignItems: "center",
+            paddingVertical: 64,
+            gap: 24,
+            flexGrow: 1,
+          }}
+        >
+          <Illustration kind="report" size={200} />
           <Text
             style={{
               color: colors.muted,
@@ -81,6 +88,7 @@ export function ContentMenu({
   if (stage === "report")
     return (
       <Sheet
+        expanded
         title={reportAccount ? "Report account" : `Report ${target.type}`}
         onClose={close}
       >

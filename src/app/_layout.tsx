@@ -24,21 +24,15 @@ function Navigation() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="continue" options={{ headerShown: false }} />
         <Stack.Protected guard={user?.status === "active"} redirectTo="/">
-          <Stack.Screen
-            name="(onboarding)/username"
-            options={{ title: "Your profile" }}
-          />
+          <Stack.Screen name="(onboarding)/username" options={{ title: "" }} />
           <Stack.Screen
             name="(onboarding)/communities"
-            options={{ title: "Your communities" }}
+            options={{ title: "" }}
           />
-          <Stack.Screen
-            name="community/create"
-            options={{ title: "Create community" }}
-          />
+          <Stack.Screen name="community/create" options={{ title: "" }} />
           <Stack.Screen
             name="community/[communityId]"
-            options={{ title: "Community" }}
+            options={{ headerShown: false }}
           />
         </Stack.Protected>
         <Stack.Protected

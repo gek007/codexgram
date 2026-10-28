@@ -106,9 +106,9 @@ export function ProfileScreen({
               <View style={{ flex: 1, gap: 8 }}>
                 <Text
                   style={{
-                    fontSize: 20,
-                    fontWeight: "700",
-                    color: colors.text,
+                    fontSize: 15,
+                    fontWeight: "500",
+                    color: colors.muted,
                   }}
                 >
                   @{profile.username}
@@ -122,7 +122,7 @@ export function ProfileScreen({
                 )}
                 {profile.isMe && (
                   <Button
-                    variant="soft"
+                    variant="outline"
                     label="Edit profile"
                     onPress={() => router.push("/settings/profile")}
                   />

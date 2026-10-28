@@ -7,12 +7,14 @@ export function Sheet({
   onClose,
   visible = true,
   onDismiss,
+  expanded = false,
 }: {
   title: string;
   children: React.ReactNode;
   onClose: () => void;
   visible?: boolean;
   onDismiss?: () => void;
+  expanded?: boolean;
 }) {
   const { colors } = useTheme();
   return (
@@ -43,6 +45,7 @@ export function Sheet({
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
             maxHeight: "90%",
+            ...(expanded ? { height: "90%" as const } : {}),
             width: "100%",
             maxWidth: 640,
             alignSelf: "center",
@@ -62,7 +65,11 @@ export function Sheet({
           />
           <ScrollView
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              gap: 10,
+              ...(expanded ? { flexGrow: 1 } : {}),
+            }}
           >
             <Text
               accessibilityRole="header"

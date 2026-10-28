@@ -16,6 +16,8 @@ export function Screen({
   scroll = true,
   insetTop = true,
   insetBottom = true,
+  padding = spacing.page,
+  gap = spacing.control,
 }: {
   children: React.ReactNode;
   title?: string;
@@ -23,13 +25,15 @@ export function Screen({
   scroll?: boolean;
   insetTop?: boolean;
   insetBottom?: boolean;
+  padding?: number;
+  gap?: number;
 }) {
   const { colors } = useTheme();
   const content = (
     <View
       style={{
-        padding: spacing.page,
-        gap: spacing.control,
+        padding,
+        gap,
         flexGrow: 1,
         ...(!scroll ? { flex: 1 } : {}),
         width: "100%",

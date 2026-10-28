@@ -3,7 +3,7 @@ import { Text, View, Alert } from "react-native";
 import { Image } from "expo-image";
 import { PhotoSourceSheet } from "@/components/ui/photo-source-sheet";
 
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { randomUUID } from "expo-crypto";
 import { useAuth } from "@clerk/expo";
 import { useMutation, useQuery } from "convex/react";
@@ -11,7 +11,7 @@ import { api } from "../../../convex/_generated/api";
 import { useSession } from "@/providers/session";
 import { useTheme } from "@/theme/theme-provider";
 import { Screen } from "@/components/ui/screen";
-import { ActionRow } from "@/components/ui/action-row";
+import { ActionRow, ActionGroup } from "@/components/ui/action-row";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { errorMessage } from "@/lib/errors";
@@ -57,6 +57,28 @@ export function AccountSettingsScreen({
     await signOut();
     router.replace("/");
   };
+  const saveButton = (
+    <Button
+      variant="tertiary"
+      label="Save"
+      loading={busy}
+      onPress={() =>
+        void act(async () => {
+          const assetId = prepared
+            ? await uploadPhoto({
+                uri: prepared.uri,
+                purpose: "avatar",
+                requestId: randomUUID(),
+                getToken: () => getToken({ template: "convex" }),
+              })
+            : undefined;
+          await update({ bio, avatarAssetId: assetId });
+          setPrepared(null);
+          setMessage("Profile saved.");
+        })
+      }
+    />
+  );
   if (!user) return null;
   if (photo)
     return (
@@ -121,25 +143,7 @@ export function AccountSettingsScreen({
               A new profile photo is ready. Save to upload it.
             </Text>
           )}
-          <Button
-            label="Save profile"
-            loading={busy}
-            onPress={() =>
-              void act(async () => {
-                const assetId = prepared
-                  ? await uploadPhoto({
-                      uri: prepared.uri,
-                      purpose: "avatar",
-                      requestId: randomUUID(),
-                      getToken: () => getToken({ template: "convex" }),
-                    })
-                  : undefined;
-                await update({ bio, avatarAssetId: assetId });
-                setPrepared(null);
-                setMessage("Profile saved.");
-              })
-            }
-          />
+          <Stack.Screen options={{ headerRight: () => saveButton }} />
           {!!error && (
             <Text accessibilityRole="alert" style={{ color: colors.danger }}>
               {error}
@@ -153,74 +157,52 @@ export function AccountSettingsScreen({
         </>
       ) : (
         <>
-          <Text
-            style={{ fontSize: 14, fontWeight: "600", color: colors.muted }}
-          >
-            Account
-          </Text>
-          <ActionRow
-            icon="user"
-            label="Edit profile"
-            detail={`@${user.username}`}
-            onPress={() => router.push("/settings/profile")}
-          />
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: colors.muted,
-              marginTop: 8,
-            }}
-          >
-            Appearance
-          </Text>
-          <ActionRow
-            icon="sun"
-            label="Appearance"
-            detail="Light and dark appearance follow your device settings."
-          />
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: colors.muted,
-              marginTop: 8,
-            }}
-          >
-            In-app
-          </Text>
-          <ActionRow
-            icon="bell"
-            label="Activity"
-            detail="Likes and comments appear in Activity."
-            onPress={() => router.push("/(tabs)/notifications")}
-          />
+          <ActionGroup title="Account">
+            <ActionRow
+              grouped
+              icon="user"
+              label="Edit profile"
+              detail={`@${user.username}`}
+              onPress={() => router.push("/settings/profile")}
+            />
+          </ActionGroup>
+          <ActionGroup title="Appearance">
+            <ActionRow
+              grouped
+              icon="sun"
+              label="Appearance"
+              detail="Light and dark appearance follow your device settings."
+            />
+          </ActionGroup>
+          <ActionGroup title="In-app">
+            <ActionRow
+              grouped
+              icon="bell"
+              label="Activity"
+              detail="Likes and comments appear in Activity."
+              onPress={() => router.push("/(tabs)/notifications")}
+            />
+          </ActionGroup>
         </>
       )}
       {!editing && (
         <>
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: colors.muted,
-              marginTop: 8,
-            }}
-          >
-            Safety
-          </Text>
-          <ActionRow
-            icon="slash"
-            label="Blocked accounts"
-            onPress={() => router.push("/settings/blocked")}
-          />
-          {user.isAdmin && (
+          <ActionGroup title="Safety">
             <ActionRow
-              icon="shield"
-              label="Admin report inbox"
-              onPress={() => router.push("/admin/reports")}
+              grouped
+              icon="slash"
+              label="Blocked accounts"
+              onPress={() => router.push("/settings/blocked")}
             />
-          )}
+            {user.isAdmin && (
+              <ActionRow
+                grouped
+                icon="shield"
+                label="Admin report inbox"
+                onPress={() => router.push("/admin/reports")}
+              />
+            )}
+          </ActionGroup>
           <ActionRow
             icon="log-out"
             danger
@@ -260,8 +242,7 @@ export function AccountSettingsScreen({
               textAlign: "center",
             }}
           >
-            Codexgram beta · 1.0.0{"\n"}Light and dark appearance follow your
-            device settings.
+            Codexgram beta · 1.0.0
           </Text>
         </>
       )}

@@ -26,20 +26,34 @@ export default function Blocked() {
       <FlatList
         data={results}
         keyExtractor={(r) => r.id}
-        contentContainerStyle={{ gap: 14 }}
+        contentContainerStyle={{ gap: 0 }}
         renderItem={({ item }) => (
           <View
             style={{
               gap: 12,
               flexDirection: "row",
               alignItems: "center",
-              borderWidth: 1,
+              borderBottomWidth: 1,
               borderColor: colors.border,
-              padding: 16,
-              borderRadius: 18,
-              backgroundColor: colors.surface,
+              paddingVertical: 16,
+              borderRadius: 0,
+              backgroundColor: colors.background,
             }}
           >
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                backgroundColor: colors.secondary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: colors.primary, fontSize: 20 }}>
+                {item.username[0]?.toUpperCase()}
+              </Text>
+            </View>
             <Text style={{ color: colors.text, fontWeight: "700", flex: 1 }}>
               @{item.username}
             </Text>

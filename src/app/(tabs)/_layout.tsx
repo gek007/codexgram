@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/theme/theme-provider";
 export default function Layout() {
   const { colors } = useTheme();
@@ -21,8 +21,8 @@ export default function Layout() {
         [
           { name: "index", title: "Home", icon: "home" },
           { name: "discover", title: "Discover", icon: "compass" },
-          { name: "notifications", title: "Activity", icon: "bell" },
-          { name: "profile", title: "You", icon: "user" },
+          { name: "notifications", title: "Activity", icon: "notifications" },
+          { name: "profile", title: "You", icon: "person" },
         ] as const
       ).map((tab) => (
         <Tabs.Screen
@@ -30,9 +30,9 @@ export default function Layout() {
           name={tab.name}
           options={{
             title: tab.title,
-            tabBarIcon: ({ color, size }) => (
-              <Feather
-                name={tab.icon}
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? tab.icon : `${tab.icon}-outline`}
                 color={typeof color === "string" ? color : colors.muted}
                 size={size}
               />

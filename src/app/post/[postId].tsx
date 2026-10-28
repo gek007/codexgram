@@ -11,7 +11,7 @@ export default function Post() {
   const { postId } = useLocalSearchParams<{ postId: string }>();
   const post = useQuery(api.posts.get, { postId: postId as Id<"posts"> });
   return (
-    <Screen insetTop={false}>
+    <Screen insetTop={false} padding={12}>
       {post === undefined ? (
         <StateView title="Opening photo…" loading />
       ) : post ? (

@@ -1,79 +1,38 @@
 import React from "react";
-import { View } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { Aperture } from "./brand";
-import { useTheme } from "@/theme/theme-provider";
+import { Image } from "expo-image";
+
+const artwork = {
+  mail: require("../../../assets/design/mail.png"),
+  lock: require("../../../assets/design/lock.png"),
+  key: require("../../../assets/design/key.png"),
+  success: require("../../../assets/design/community-success.png"),
+  photo: require("../../../assets/design/feed-empty.png"),
+  community: require("../../../assets/design/community-success.png"),
+  activity: require("../../../assets/design/conversation-empty.png"),
+  providers: require("../../../assets/design/providers.png"),
+  report: require("../../../assets/design/report-success.png"),
+};
+
+/** Decorative artwork extracted from the approved screen boards. */
 export function Illustration({
   kind = "photo",
-  size = 144,
+  size = 180,
 }: {
-  kind?:
-    "mail" | "lock" | "key" | "success" | "photo" | "community" | "activity";
+  kind?: keyof typeof artwork;
   size?: number;
 }) {
-  const { colors } = useTheme();
-  const icons = {
-    mail: "mail",
-    lock: "lock",
-    key: "key",
-    success: "check",
-    photo: "camera",
-    community: "users",
-    activity: "message-circle",
-  } as const;
   return (
-    <View
-      accessible={false}
+    <Image
+      source={artwork[kind]}
+      contentFit="contain"
+      accessibilityElementsHidden
+      importantForAccessibility="no"
       style={{
         width: size,
-        height: size,
+        height: size * 0.78,
         alignSelf: "center",
-        alignItems: "center",
-        justifyContent: "center",
-        marginVertical: 8,
+        marginVertical: 16,
       }}
-    >
-      <View
-        style={{
-          position: "absolute",
-          width: size * 0.92,
-          height: size * 0.72,
-          borderRadius: size * 0.36,
-          backgroundColor: colors.secondary,
-          transform: [{ rotate: "-14deg" }],
-        }}
-      />
-      {kind === "success" ? (
-        <>
-          <Aperture size={size * 0.6} />
-          <View style={{ position: "absolute" }}>
-            <Feather name="check" size={size * 0.32} color={colors.primary} />
-          </View>
-        </>
-      ) : (
-        <Feather name={icons[kind]} size={size * 0.48} color={colors.primary} />
-      )}
-      {[
-        [-0.38, -0.25],
-        [0.38, -0.1],
-        [0.3, 0.3],
-      ].map(([x, y], i) => (
-        <View
-          key={i}
-          style={{
-            position: "absolute",
-            width: 7,
-            height: 18,
-            borderRadius: 4,
-            backgroundColor: i === 1 ? colors.primary : "#D8F36A",
-            transform: [
-              { translateX: x * size },
-              { translateY: y * size },
-              { rotate: `${i * 55 + 25}deg` },
-            ],
-          }}
-        />
-      ))}
-    </View>
+    />
   );
 }

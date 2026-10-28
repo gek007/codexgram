@@ -131,8 +131,9 @@ export function DirectoryScreen({
         contentContainerStyle={{ gap: 12, paddingBottom: 20 }}
         renderItem={({ item: c }) => (
           <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`View ${c.name}`}
+            accessibilityRole={onboarding ? undefined : "button"}
+            accessible={!onboarding}
+            accessibilityLabel={onboarding ? undefined : `View ${c.name}`}
             onPress={() =>
               router.push({
                 pathname: "/community/[communityId]",

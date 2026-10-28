@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { View, Text, PanResponder, useWindowDimensions } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  ActivityIndicator,
+  PanResponder,
+  useWindowDimensions,
+} from "react-native";
 import { Image } from "expo-image";
 import { Feather } from "@expo/vector-icons";
 import { Button } from "@/components/ui/button";
@@ -37,8 +44,65 @@ export function PhotoEditor({
     });
   }, [busy, scaledWidth, scaledHeight, size]);
   return (
-    <View style={{ gap: 16 }}>
-      <Text style={{ color: colors.muted }}>
+    <View
+      style={{
+        gap: 24,
+        backgroundColor: "#141316",
+        margin: -24,
+        padding: 20,
+        minHeight: 650,
+        flexGrow: 1,
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cancel photo"
+          disabled={busy}
+          onPress={onCancel}
+          style={{ minHeight: 44, justifyContent: "center" }}
+        >
+          <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Cancel</Text>
+        </Pressable>
+        <Text style={{ color: "#FFFFFF", fontSize: 17, fontWeight: "600" }}>
+          Crop photo
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Done"
+          disabled={busy}
+          style={{ minHeight: 44, justifyContent: "center" }}
+          onPress={() => {
+            setBusy(true);
+            void preparePhoto(source.uri, {
+              originX: Math.round((source.width - side) * offset.x),
+              originY: Math.round((source.height - side) * offset.y),
+              width: side,
+              height: side,
+            })
+              .then(onDone)
+              .catch(() =>
+                setError("Could not prepare this photo. Try another image."),
+              )
+              .finally(() => setBusy(false));
+          }}
+        >
+          {busy ? (
+            <ActivityIndicator color="#B6A0FF" />
+          ) : (
+            <Text style={{ color: "#B6A0FF", fontSize: 16, fontWeight: "600" }}>
+              Done
+            </Text>
+          )}
+        </Pressable>
+      </View>
+      <Text style={{ color: "#C5C1CC", textAlign: "center", marginBottom: 30 }}>
         Drag to frame your photo. Rotate to find its best angle.
       </Text>
       <View
@@ -48,7 +112,7 @@ export function PhotoEditor({
           width: size,
           height: size,
           overflow: "hidden",
-          borderRadius: 2,
+          borderRadius: 0,
           backgroundColor: colors.secondary,
           alignSelf: "center",
         }}
@@ -127,30 +191,6 @@ export function PhotoEditor({
           {error}
         </Text>
       )}
-      <Button
-        label="Done"
-        loading={busy}
-        onPress={() => {
-          setBusy(true);
-          void preparePhoto(source.uri, {
-            originX: Math.round((source.width - side) * offset.x),
-            originY: Math.round((source.height - side) * offset.y),
-            width: side,
-            height: side,
-          })
-            .then(onDone)
-            .catch(() =>
-              setError("Could not prepare this photo. Try another image."),
-            )
-            .finally(() => setBusy(false));
-        }}
-      />
-      <Button
-        variant="tertiary"
-        label="Cancel photo"
-        disabled={busy}
-        onPress={onCancel}
-      />
     </View>
   );
 }

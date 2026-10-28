@@ -190,7 +190,7 @@ export function ComposerScreen({
     );
   if (editing)
     return (
-      <Screen insetTop={false} title="Crop photo">
+      <Screen insetTop={false}>
         <PhotoEditor
           photo={editing}
           onCancel={() => setEditing(null)}

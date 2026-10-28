@@ -18,7 +18,8 @@ export function Button({
   loading?: boolean;
   secondary?: boolean;
   danger?: boolean;
-  variant?: "primary" | "secondary" | "tertiary" | "soft" | "provider";
+  variant?:
+    "primary" | "secondary" | "tertiary" | "soft" | "provider" | "outline";
   icon?: React.ReactNode;
   iconOnly?: boolean;
 }) {
@@ -30,7 +31,7 @@ export function Button({
     ? colors.danger
     : role === "primary"
       ? colors.onPrimary
-      : role === "soft" || role === "provider"
+      : role === "soft" || role === "provider" || role === "outline"
         ? colors.text
         : colors.primary;
   return (
@@ -42,7 +43,7 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => ({
         minHeight: 48,
-        borderRadius: role === "soft" ? 12 : 999,
+        borderRadius: role === "soft" || role === "outline" ? 10 : 999,
         paddingHorizontal: iconOnly ? 12 : 20,
         paddingVertical: 12,
         backgroundColor: plain
@@ -54,10 +55,13 @@ export function Button({
             : role === "soft"
               ? colors.secondary
               : colors.surface,
-        borderWidth: role === "secondary" || role === "provider" ? 1 : 0,
+        borderWidth:
+          role === "secondary" || role === "provider" || role === "outline"
+            ? 1
+            : 0,
         borderColor: danger
           ? colors.danger
-          : role === "provider"
+          : role === "provider" || role === "outline"
             ? colors.border
             : colors.primary,
         opacity: blocked ? 0.45 : pressed ? 0.75 : 1,

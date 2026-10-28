@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Text, View, Pressable, Alert } from "react-native";
 import { Image } from "expo-image";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -49,8 +49,8 @@ export function PostCard({
     <View
       style={{
         backgroundColor: colors.surface,
-        borderRadius: 16,
-        borderWidth: 1,
+        borderRadius: detail ? 0 : 12,
+        borderWidth: detail ? 0 : 1,
         borderColor: colors.border,
         overflow: "hidden",
       }}
@@ -175,8 +175,8 @@ export function PostCard({
               minHeight: 44,
             }}
           >
-            <Feather
-              name="heart"
+            <Ionicons
+              name={liked ? "heart" : "heart-outline"}
               size={23}
               color={liked ? colors.primary : colors.text}
             />

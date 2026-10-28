@@ -12,6 +12,7 @@ jest.mock("@/providers/session", () => ({
 }));
 jest.mock("convex/react", () => ({ useMutation: () => mockCreate }));
 jest.mock("expo-router", () => ({
+  Stack: { Screen: () => null },
   router: { replace: (...args: unknown[]) => mockReplace(...args) },
 }));
 jest.mock("@expo/vector-icons", () => ({ Feather: () => null }));

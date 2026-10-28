@@ -10,6 +10,7 @@ export function ActionRow({
   detail,
   disabled = false,
   chevron = true,
+  grouped = false,
 }: {
   label: string;
   icon?: React.ComponentProps<typeof Feather>["name"];
@@ -18,6 +19,7 @@ export function ActionRow({
   detail?: string;
   disabled?: boolean;
   chevron?: boolean;
+  grouped?: boolean;
 }) {
   const { colors } = useTheme();
   const color = danger ? colors.danger : colors.text;
@@ -47,10 +49,11 @@ export function ActionRow({
     gap: 14,
     minHeight: 56,
     padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderRadius: grouped ? 0 : 12,
+    borderWidth: grouped ? 0 : 1,
+    borderBottomWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.surface,
+    backgroundColor: danger ? colors.danger + "10" : colors.surface,
   };
   return onPress ? (
     <Pressable
@@ -68,5 +71,42 @@ export function ActionRow({
     </Pressable>
   ) : (
     <View style={style}>{content}</View>
+  );
+}
+
+/** A single bordered group with divided rows, as in the approved settings and sheets. */
+export function ActionGroup({
+  title,
+  children,
+}: {
+  title?: string;
+  children: React.ReactNode;
+}) {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={{
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: 14,
+        overflow: "hidden",
+        backgroundColor: colors.surface,
+      }}
+    >
+      {!!title && (
+        <Text
+          style={{
+            color: colors.muted,
+            fontSize: 13,
+            paddingHorizontal: 14,
+            paddingTop: 14,
+            paddingBottom: 4,
+          }}
+        >
+          {title}
+        </Text>
+      )}
+      {children}
+    </View>
   );
 }

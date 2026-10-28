@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Text, View, Pressable } from "react-native";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { CommunityArt, communityAccents } from "@/components/ui/community-art";
@@ -26,7 +26,8 @@ export function CreateCommunityScreen() {
   const [error, setError] = useState("");
   if (createdId)
     return (
-      <Screen insetTop={false}>
+      <Screen key="created">
+        <Stack.Screen options={{ headerShown: false }} />
         <Illustration kind="success" size={176} />
         <Text
           accessibilityRole="header"
@@ -62,6 +63,7 @@ export function CreateCommunityScreen() {
         >
           <CommunityArt
             accent={accent}
+            cover
             style={{
               width: "100%",
               height: 128,
@@ -116,6 +118,7 @@ export function CreateCommunityScreen() {
     );
   return (
     <Screen
+      key="create-form"
       insetTop={false}
       title="Make a space for your people."
       subtitle="Create a public community for the photos you love and the people who get it."
@@ -182,6 +185,7 @@ export function CreateCommunityScreen() {
       </Text>
       <CommunityArt
         accent={accent}
+        cover
         style={{ width: "100%", height: 120, aspectRatio: undefined }}
       />
       <Text style={{ color: colors.muted, fontSize: 14 }}>

@@ -9,6 +9,7 @@ import { Illustration } from "@/components/ui/illustration";
 import { ProviderMark } from "@/components/ui/provider-mark";
 import { Screen } from "@/components/ui/screen";
 import { Button } from "@/components/ui/button";
+import { CodeField } from "@/components/ui/code-field";
 import { Field } from "@/components/ui/field";
 import { useTheme } from "@/theme/theme-provider";
 import { errorMessage } from "@/lib/errors";
@@ -157,7 +158,7 @@ export function AuthScreen({
   const passwordMode = ["signin", "signup", "newpassword"].includes(mode);
   if (mode === "welcome")
     return (
-      <Screen>
+      <Screen key="welcome">
         <View style={{ gap: 12, flexGrow: 1 }}>
           <Text
             accessibilityRole="header"
@@ -218,7 +219,7 @@ export function AuthScreen({
               ? "One more thing"
               : "Good to see you.";
   return (
-    <Screen>
+    <Screen key={mode}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
         <IconButton
           icon="chevron-left"
@@ -228,7 +229,11 @@ export function AuthScreen({
             setError("");
           }}
         />
-        {!["signin", "signup"].includes(mode) && <Brand compact />}
+        {!["signin", "signup"].includes(mode) && (
+          <View style={{ flex: 1, alignItems: "center", marginRight: 44 }}>
+            <Brand compact />
+          </View>
+        )}
       </View>
       {!["signin", "signup"].includes(mode) && (
         <Illustration
@@ -239,9 +244,9 @@ export function AuthScreen({
                 ? "key"
                 : mode === "reset"
                   ? "lock"
-                  : "success"
+                  : "providers"
           }
-          size={132}
+          size={204}
         />
       )}
       <View
@@ -259,11 +264,19 @@ export function AuthScreen({
             lineHeight: 34,
             fontWeight: "700",
             letterSpacing: -1,
+            textAlign: ["signin", "signup"].includes(mode) ? "left" : "center",
           }}
         >
           {title}
         </Text>
-        <Text style={{ color: colors.muted, fontSize: 16, lineHeight: 24 }}>
+        <Text
+          style={{
+            color: colors.muted,
+            fontSize: 16,
+            lineHeight: 24,
+            textAlign: ["signin", "signup"].includes(mode) ? "left" : "center",
+          }}
+        >
           {mode === "signup"
             ? "Create your Codexgram account."
             : codeMode
@@ -310,15 +323,7 @@ export function AuthScreen({
           Use at least 8 characters.
         </Text>
       )}
-      {codeMode && (
-        <Field
-          label="Verification code"
-          keyboardType="number-pad"
-          textContentType="oneTimeCode"
-          value={code}
-          onChangeText={setCode}
-        />
-      )}
+      {codeMode && <CodeField value={code} onChangeText={setCode} />}
       {mode === "signin" && (
         <Pressable
           accessibilityRole="button"

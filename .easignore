@@ -53,3 +53,8 @@ docs/
 .github/
 convex/**/*.test.ts
 convex/test-photo.json
+
+# Local visual fixtures and IDE/browser tooling never ship in mobile archives.
+qa/
+.idea/
+.playwright-mcp/

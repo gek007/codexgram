@@ -17,11 +17,15 @@ export function FeedList({
   userId,
   header,
   noCommunities = false,
+  itemInset = 0,
+  hideItems = false,
 }: {
   communityId?: Id<"communities">;
   userId?: Id<"users">;
   header?: React.ReactElement;
   noCommunities?: boolean;
+  itemInset?: number;
+  hideItems?: boolean;
 }) {
   const { colors } = useTheme();
   const grid = !!userId;
@@ -50,7 +54,7 @@ export function FeedList({
       key={grid ? "photos" : "feed"}
       numColumns={grid ? 3 : 1}
       columnWrapperStyle={grid ? { gap: 0 } : undefined}
-      data={results}
+      data={hideItems ? [] : results}
       keyExtractor={(post) => post.id}
       style={{ flex: 1 }}
       contentContainerStyle={{ gap: grid ? 0 : 12, paddingBottom: 30 }}
@@ -87,11 +91,13 @@ export function FeedList({
             />
           </Pressable>
         ) : (
-          <PostCard post={item} />
+          <View style={{ marginHorizontal: itemInset }}>
+            <PostCard post={item} />
+          </View>
         )
       }
       ListEmptyComponent={
-        status === "LoadingFirstPage" ? (
+        hideItems ? undefined : status === "LoadingFirstPage" ? (
           <FeedSkeleton />
         ) : (
           <View style={{ paddingVertical: 40, gap: 20, alignItems: "center" }}>

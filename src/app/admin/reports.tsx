@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { FlatList, Text, View, Alert } from "react-native";
+import { FlatList, Text, View, Alert, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Screen } from "@/components/ui/screen";
+import { Feather } from "@expo/vector-icons";
+import { Sheet } from "@/components/ui/sheet";
 import { ActionRow } from "@/components/ui/action-row";
 import { Button } from "@/components/ui/button";
 import { StateView } from "@/components/ui/state-view";
@@ -18,6 +20,7 @@ function ReportInbox() {
     { initialNumItems: 20 },
   );
   const resolve = useMutation(api.moderation.resolveReport);
+  const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState("");
   return (
     <Screen
@@ -25,7 +28,13 @@ function ReportInbox() {
 
       scroll={false}
     >
-      {!!error && (
+      <Text style={{ color: colors.text, fontSize: 30, fontWeight: "700" }}>
+        Reports
+      </Text>
+      <Text style={{ color: colors.muted, fontSize: 13 }}>
+        Admin only · Open reports
+      </Text>
+      {!!error && !selected && (
         <Text accessibilityRole="alert" style={{ color: colors.danger }}>
           {error}
         </Text>
@@ -45,58 +54,115 @@ function ReportInbox() {
               borderColor: colors.border,
             }}
           >
-            <Text style={{ color: colors.muted }}>{r.targetType} report</Text>
-            <Text style={{ color: colors.text, fontWeight: "700" }}>
-              {r.reason}
-            </Text>
-            {r.photoUrl && (
-              <Image
-                source={r.photoUrl}
-                style={{ width: "100%", aspectRatio: 1, borderRadius: 14 }}
-              />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Review ${r.targetType} report: ${r.reason}`}
+              onPress={() => setSelected(r.id)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                minHeight: 48,
+              }}
+            >
+              {r.photoUrl ? (
+                <Image
+                  source={r.photoUrl}
+                  style={{ width: 48, height: 48, borderRadius: 8 }}
+                />
+              ) : (
+                <Feather name="flag" size={26} color={colors.primary} />
+              )}
+              <View style={{ flex: 1, gap: 5 }}>
+                <Text style={{ color: colors.text, fontWeight: "600" }}>
+                  {r.targetType[0].toUpperCase() + r.targetType.slice(1)} report
+                </Text>
+                <Text style={{ color: colors.muted, fontSize: 13 }}>
+                  {r.reason}
+                </Text>
+              </View>
+              <Feather name="chevron-right" size={20} color={colors.muted} />
+            </Pressable>
+            {selected === r.id && (
+              <Sheet
+                expanded
+                title="Review report"
+                onClose={() => {
+                  setSelected(null);
+                  setError("");
+                }}
+              >
+                {!!error && (
+                  <Text
+                    accessibilityRole="alert"
+                    style={{ color: colors.danger }}
+                  >
+                    {error}
+                  </Text>
+                )}
+                <Text
+                  style={{
+                    color: colors.text,
+                    fontWeight: "700",
+                    fontSize: 20,
+                  }}
+                >
+                  {r.reason}
+                </Text>
+                {r.photoUrl && (
+                  <Image
+                    source={r.photoUrl}
+                    style={{ width: "100%", aspectRatio: 1, borderRadius: 14 }}
+                  />
+                )}
+                <Text style={{ color: colors.text }}>{r.text}</Text>
+                {(
+                  [
+                    "dismiss",
+                    ...(r.targetType === "user" ? [] : ["remove"]),
+                    "suspend",
+                  ] as const
+                ).map((decision) => (
+                  <ActionRow
+                    key={decision}
+                    icon={
+                      decision === "dismiss"
+                        ? "check-circle"
+                        : decision === "remove"
+                          ? "trash-2"
+                          : "user-x"
+                    }
+                    danger={decision !== "dismiss"}
+                    label={
+                      decision === "dismiss"
+                        ? "Dismiss report"
+                        : decision === "remove"
+                          ? "Remove content"
+                          : "Suspend author"
+                    }
+                    onPress={() =>
+                      Alert.alert(
+                        "Resolve this report?",
+                        `Action: ${decision}`,
+                        [
+                          { text: "Cancel", style: "cancel" },
+                          {
+                            text: "Confirm",
+                            onPress: () => {
+                              void resolve({
+                                reportId: r.id,
+                                decision: decision as
+                                  "dismiss" | "remove" | "suspend",
+                              }).catch((e) => setError(errorMessage(e)));
+                            },
+                          },
+                        ],
+                      )
+                    }
+                  />
+                ))}
+              </Sheet>
             )}
-            <Text style={{ color: colors.text }}>{r.text}</Text>
-            {(
-              [
-                "dismiss",
-                ...(r.targetType === "user" ? [] : ["remove"]),
-                "suspend",
-              ] as const
-            ).map((decision) => (
-              <ActionRow
-                key={decision}
-                icon={
-                  decision === "dismiss"
-                    ? "check-circle"
-                    : decision === "remove"
-                      ? "trash-2"
-                      : "user-x"
-                }
-                danger={decision !== "dismiss"}
-                label={
-                  decision === "dismiss"
-                    ? "Dismiss report"
-                    : decision === "remove"
-                      ? "Remove content"
-                      : "Suspend author"
-                }
-                onPress={() =>
-                  Alert.alert("Resolve this report?", `Action: ${decision}`, [
-                    { text: "Cancel", style: "cancel" },
-                    {
-                      text: "Confirm",
-                      onPress: () => {
-                        void resolve({
-                          reportId: r.id,
-                          decision: decision as
-                            "dismiss" | "remove" | "suspend",
-                        }).catch((e) => setError(errorMessage(e)));
-                      },
-                    },
-                  ])
-                }
-              />
-            ))}
           </View>
         )}
         ListEmptyComponent={
